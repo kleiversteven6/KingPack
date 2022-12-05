@@ -1,0 +1,21 @@
+.cardboard{
+    border: solid 1px !important;
+    border-radius: 5px !important;
+}
+.cardboard thead{
+    background-color:#f49c23 ;
+   
+}
+.cardboard thead tr th{
+    width: 4em !important;
+    color: #fff !important;
+}
+.cardboard tbody tr {
+    height: 4em;
+}
+.cardboard thead tr {
+    height: 3em;
+}
+.cardboard tbody tr td{
+    width: 4em !important;
+}

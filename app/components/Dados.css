@@ -1,0 +1,123 @@
+/* General */
+.DadosComponent_FullWidth {
+  width: 100%;
+}
+
+.DadosComponent_PIFix {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+}
+
+.DadosComponent_PItxtFix1 {
+  font-size: 1.1rem !important;
+  padding: 10px 0 10px 0 !important;
+}
+
+.DadosComponent_ModalFix {
+  position: absolute !important;
+  text-align: center !important;
+  background-color: rgba(0,0,0,0.4) !important;
+}
+
+.DadosComponent_ModalButton {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* PC */
+@media screen and (min-width: 1200px) {
+  .DadosComponent_BG {
+    width: 100%;
+  }
+
+  #dicebox {
+    width: 815px;
+    height: 550px;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: solid 1px;
+    border-radius: 5px;
+    position: relative;
+  }
+
+  .DadosComponent_PcHide {
+    display: none !important;
+  }
+  
+  .DadosComponent_PItxtFix0 {
+    width: 50% !important;
+  }
+}
+
+/* Tablet(?) */
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .DadosComponent_TBL_txt {
+    font-size: 0.5vh;
+  }
+
+  .DadosComponent_PcHide {
+    display: none !important;
+  }
+  
+  .DadosComponent_PItxtFix0 {
+    width: 50% !important;
+  }
+
+  #dicebox {
+    width: 690px;
+    height: 550px;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: solid 1px;
+    border-radius: 5px;
+    position: relative;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 991px) {
+  .DadosComponent_Divider {
+    display: none !important;
+  }
+  
+  .DadosComponent_BS0 {
+    padding-bottom: 75px !important;
+  }
+  
+  .DadosComponent_BG {
+    width: 50%;
+    padding: 4px;
+    float: left;
+  }
+  
+  .DadosComponent_BG1 {
+    width: 50% !important;
+    height: 30% !important;
+    float: left !important;
+  }
+
+  .DadosComponent_MobileHide {
+    display: none !important;
+  }
+
+  .DadosComponent_PItxtFix0 {
+    width: 100% !important;
+    height: 50% !important;
+  }
+
+  #dicebox {
+    width: auto;
+    height: 50vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: solid 1px;
+    border-radius: 5px;
+    position: relative;
+  }
+}
