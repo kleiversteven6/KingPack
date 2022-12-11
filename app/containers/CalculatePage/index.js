@@ -26,6 +26,41 @@ export default function CalculatePage() {
       fraccionario: 0,
       decimal: 0,
     },
+    {
+      id: 2,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 3,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 4,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 5,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 6,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
   ]);
 
   const [stats, setStats] = useState({
@@ -269,12 +304,10 @@ export default function CalculatePage() {
   return (
     <>
       <Container>
-        <h1>
-          Calculadora en <i>8K</i>
-        </h1>
+        <h1>Calculadora Parley</h1>
 
         {/* ↑↑↑↑↑ */}
-        <Segment secondary raised>
+        <Segment secondary raised className="dark">
           <Grid relaxed="very">
             {/* |<==| */}
             <Grid.Column verticalAlign="middle" computer={5} mobile={16}>
@@ -324,6 +357,8 @@ export default function CalculatePage() {
               <Divider className="CalculatePage_PcHide" />
               <Grid textAlign="center">
                 <Grid.Row>
+               
+
                   <Grid.Column computer={4} mobile={16}>
                     <Button.Group vertical={!checkMobile()}>
                       <Button
@@ -340,6 +375,21 @@ export default function CalculatePage() {
                     </Button.Group>
                   </Grid.Column>
 
+                  <Grid.Column computer={4} mobile={16}>
+                    <Button.Group vertical>
+                      <Button
+                        className="CalculatePage_Btn1"
+                        color="brown"
+                        content='Multiplicador'
+                      />
+                      <Button
+                        basic
+                        color="orange"
+                        content={stats.dec === '' ? '0' : stats.dec}
+                      />
+                    </Button.Group>
+                  </Grid.Column>
+                  
                   <Grid.Column computer={4} mobile={16}>
                     <Button.Group vertical={!checkMobile()}>
                       <Button
@@ -379,24 +429,9 @@ export default function CalculatePage() {
               {/* ↓ */}
               <Grid>
                 <Grid.Row>
-                  <Grid.Column width={5}>
-                    <Button.Group vertical>
-                      <Button
-                        className="CalculatePage_Btn1"
-                        color="brown"
-                        content={
-                          checkMobile() ? 'Decimal' : 'Cuota Total Decimal'
-                        }
-                      />
-                      <Button
-                        basic
-                        color="orange"
-                        content={stats.dec === '' ? '0' : stats.dec}
-                      />
-                    </Button.Group>
-                  </Grid.Column>
+                 
 
-                  <Grid.Column width={5}>
+                  {/* <Grid.Column width={5}>
                     <Button.Group vertical>
                       <Button
                         className="CalculatePage_Btn1"
@@ -424,7 +459,8 @@ export default function CalculatePage() {
                         content={stats.fra === '' ? '0/0' : stats.fra}
                       />
                     </Button.Group>
-                  </Grid.Column>
+                  </Grid.Column> */}
+
                 </Grid.Row>
               </Grid>
             </GridColumn>
@@ -435,7 +471,7 @@ export default function CalculatePage() {
         <Grid>
           <Grid.Row>
             <GridColumn>
-              <Table striped>
+              <Table striped inverted>
                 {/* ↑ */}
                 <Table.Header className="CalculatePage_MobileHide">
                   <Table.Row textAlign="center">

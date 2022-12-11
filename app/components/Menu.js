@@ -8,7 +8,7 @@ export default function MenuComponent() {
   };
 
   return (
-    <>
+    <Menu size='small' inverted>
       <Menu.Item
         name="inicio"
         active={activeItem === 'inicio' && true}
@@ -17,7 +17,7 @@ export default function MenuComponent() {
         to="/"
         key={1}
       >
-        <Icon name="home" size="big" />
+        <Icon name="home" />
         Inicio
       </Menu.Item>
 
@@ -29,7 +29,7 @@ export default function MenuComponent() {
         to="/calculadora"
         key={2}
       >
-        <Icon name="calculator" size="big" />
+        <Icon name="calculator" />
         Calculadora
       </Menu.Item>
 
@@ -41,8 +41,8 @@ export default function MenuComponent() {
         to="/generar"
         key={3}
       >
-        <Icon name="qrcode" size="big" />
-        Generar Qr
+        <Icon name="qrcode" />
+        Generar QR
       </Menu.Item>
       <Menu.Item
         name="validar"
@@ -52,13 +52,12 @@ export default function MenuComponent() {
         to="/validar"
         key={4}
       >
-        <Icon.Group size="big">
+        <Icon.Group>
           <Icon name="qrcode" />
           <Icon name="check" color="black" size="mini" corner="bottom right" />
         </Icon.Group>
-        <br />
-        <br />
-        Validar Qr
+        
+        Validar QR
       </Menu.Item>
       <Menu.Item
         name="acortar"
@@ -71,6 +70,6 @@ export default function MenuComponent() {
         <Icon name="unlink" />
         Short Urls
       </Menu.Item>
-    </>
+    </Menu>
   );
 }
