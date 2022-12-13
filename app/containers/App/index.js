@@ -6,7 +6,7 @@
  * contain code that should be seen on all pages. (e.g. navigation bar)
  *
  */
-import { Container, Menu, Segment, Sidebar } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
@@ -22,15 +22,11 @@ import GraphicsPage from '../GraphicsPage';
 import ShortUrls from '../ShortUrls';
 
 import UrlPage from '../UrlPage';
-import TopMenu from '../../components/TopMenu';
 import DicePage from '../DicePage';
 import GameBingo from '../Bingo';
+import EquipmentPage from '../EquipmentPage';
 
 export default function App() {
-  const [visible, setVisible] = React.useState(false);
-  const URLactual = window.location;
-  const url = URLactual.pathname.split('/');
-
   return (
     <>
       <GlobalStyle />
@@ -52,6 +48,7 @@ export default function App() {
             <Route exact path="/acortar" component={ShortUrls} />
             <Route exact path="/graficas/:id" component={GraphicsPage} />
             <Route exact path="/url/:short" component={UrlPage} />
+            <Route exact path="/equipos" component={EquipmentPage} />
             <Route component={NotFoundPage} />
           </Switch>
         </Container>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Icon, Menu } from 'semantic-ui-react';
+import { Icon, Menu, Dropdown } from 'semantic-ui-react';
 import { NavLink } from 'react-router-dom';
 export default function MenuComponent() {
   const [activeItem, setActiveItem] = useState('');
@@ -8,7 +8,7 @@ export default function MenuComponent() {
   };
 
   return (
-    <Menu size='small' inverted>
+    <Menu size="small" inverted>
       <Menu.Item
         name="inicio"
         active={activeItem === 'inicio' && true}
@@ -56,7 +56,6 @@ export default function MenuComponent() {
           <Icon name="qrcode" />
           <Icon name="check" color="black" size="mini" corner="bottom right" />
         </Icon.Group>
-        
         Validar QR
       </Menu.Item>
       <Menu.Item
@@ -70,6 +69,19 @@ export default function MenuComponent() {
         <Icon name="unlink" />
         Short Urls
       </Menu.Item>
+      <Dropdown item text="Quinielas">
+        <Dropdown.Menu>
+          <Dropdown.Item
+            icon="list"
+            text="Equipos"
+            as={NavLink}
+            to="/equipos"
+          />
+          <Dropdown.Item icon="soccer" text="Equipos" />
+          <Dropdown.Item icon="calendar alternate outline" text="Calendario" />
+          <Dropdown.Item icon="flag checkered" text="Resultados" />
+        </Dropdown.Menu>
+      </Dropdown>
     </Menu>
   );
 }

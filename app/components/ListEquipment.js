@@ -13,7 +13,7 @@ import FormUrl from './FormUrl';
 import ShareComponent from './Share';
 import SocialComponent from './Social';
 
-export default function LinkUrls({ websites, deletesite }) {
+export default function ListEquipment({ websites, deletesite }) {
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [LinkUrl, setLinkUrl] = useState({ short: '', url: '', id: '' });
@@ -44,11 +44,10 @@ export default function LinkUrls({ websites, deletesite }) {
       <Table striped inverted>
         <Table.Header>
           <Table.Row textAlign="center">
-            <Table.Cell active width={2} content="Shorth url" />
-            <Table.Cell active width={5} content="Url original" />
-            <Table.Cell active width={3} content="Creada" />
-            <Table.Cell active width={1} content="Clicks" />
-            <Table.Cell active width={4} content="Opciones" />
+            <Table.Cell active width={2} content=" " />
+            <Table.Cell active width={5} content="Nombre" />
+            <Table.Cell active width={5} content="Descripcion" />
+            <Table.Cell active width={3} content="Liga" />
           </Table.Row>
         </Table.Header>
 
@@ -56,47 +55,14 @@ export default function LinkUrls({ websites, deletesite }) {
           {websites.map(row => (
             <Table.Row key={row.id} textAlign="center">
               <Table.Cell>
-                <a href={`./url/${row.short}`} target="_blank">
+                <a href={`./url/${row.descripcion}`} target="_blank">
                   {row.short}
                 </a>
               </Table.Cell>
-              <Table.Cell> {row.url} </Table.Cell>
-              <Table.Cell> {row.DateTime.toDate().toString()} </Table.Cell>
+              <Table.Cell> {row.escudo} </Table.Cell>
+              <Table.Cell> {row.liga} </Table.Cell>
 
-              <Table.Cell>{row.cliks} </Table.Cell>
-              <Table.Cell>
-                <Button.Group>
-                  <NavLink to={`./graficas/${row.id}`}>
-                    <Button icon="chart bar outline" basic color="violet" />
-                  </NavLink>
-
-                  <Button
-                    icon="share alternate"
-                    color="green"
-                    basic
-                    onClick={() => {
-                      setLinkUrl(row);
-                      setVisible(true);
-                    }}
-                  />
-                  <Button
-                    icon="trash"
-                    basic
-                    onClick={() => deletesite(row.id)}
-                    color="red"
-                  />
-
-                  <Button
-                    icon="pencil"
-                    color="teal"
-                    basic
-                    onClick={() => {
-                      setLinkUrl(row);
-                      setOpen(true);
-                    }}
-                  />
-                </Button.Group>
-              </Table.Cell>
+              <Table.Cell>{row.nombre} </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

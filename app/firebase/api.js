@@ -14,6 +14,7 @@ import {
 import { db } from './firebase';
 const collectionName = 'your_urls';
 const collectionlog = 'log_urlsShort';
+const collectionEquiments = 'equipos';
 
 export const saveWebsite = newLink =>
   addDoc(collection(db, collectionName), newLink);
@@ -33,6 +34,7 @@ export const getWebsiteShort = short =>
   getDocs(query(collection(db, collectionName), where('short', '==', short)));
 
 export const getWebsites = () => getDocs(collection(db, collectionName));
+export const getEquipments = () => getDocs(collection(db, collectionEquiments));
 
 export const deleteWebsite = id => deleteDoc(doc(db, collectionName, id));
 

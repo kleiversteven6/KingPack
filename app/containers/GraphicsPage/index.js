@@ -98,10 +98,12 @@ export default function GraphicsPage({ match }) {
           }}
         />
       </Segment>
-      <Tab
-        menu={{ fluid: true, vertical: true, tabular: true, color: 'blue' }}
-        panes={panes}
-      />
+      <Segment>
+        <Tab
+          menu={{ fluid: true, vertical: true, tabular: true, color: 'blue' }}
+          panes={panes}
+        />
+      </Segment>
     </div>
   );
 }
