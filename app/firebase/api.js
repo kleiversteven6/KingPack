@@ -19,6 +19,12 @@ const collectionEquiments = 'equipos';
 export const saveWebsite = newLink =>
   addDoc(collection(db, collectionName), newLink);
 
+export const saveEquiment = data =>
+  addDoc(collection(db, collectionEquiments), data);
+
+export const updateEquiment = (id, updatedFields) =>
+  updateDoc(doc(db, collectionEquiments, id), updatedFields);
+
 export const savelog = datalog =>
   addDoc(collection(db, collectionlog), datalog);
 

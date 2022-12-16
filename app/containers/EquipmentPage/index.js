@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container } from 'semantic-ui-react';
-
-import FormUrl from '../../components/FormUrl';
+import FormEquipo from '../../components/FormEquipo';
 import ListEquipment from '../../components/ListEquipment';
-import { getEquipments, deleteWebsite } from '../../firebase/api';
+import { getEquipments } from '../../firebase/api';
 
 export default function EquipmentPage() {
-  const [websites, setWebsites] = useState([]);
+  const [equipos, setEquipos] = useState([]);
+  const [equipo, setEquipo] = useState({
+    id: '',
+    descripcion: '',
+    liga: '',
+    nombre: '',
+    escudo: '',
+  });
 
-  const getLinks = async () => {
+  const getEquipment = async () => {
     const querySnapshot = await getEquipments();
     // onGetLinks((querySnapshot) => {
     const docs = [];
@@ -26,25 +32,47 @@ export default function EquipmentPage() {
       });
     });
     // });
-    setWebsites(docs);
+    setEquipos(docs);
   };
-  const deletesite = id => {
-    deleteWebsite(id);
-    getLinks();
-  };
+
   useEffect(() => {
-    getLinks();
+    getEquipment();
   }, []);
 
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button color="blue" basic floated="right" onClick={() => setOpen(true)}>
-        Agregar
-      </Button>
-      <FormUrl setOpen={setOpen} open={open} title="Acortar url" />
+      <FormEquipo
+        setOpen={setOpen}
+        open={open}
+        setEquipo={setEquipo}
+        title="Nuevo equipo"
+        equipo={equipo}
+        getEquipment={getEquipment}
+      />
       <Container style={{ margin: '10px' }}>
-        <ListEquipment websites={websites} deletesite={deletesite} />
+        <Button
+          color="blue"
+          basic
+          floated="right"
+          onClick={() => {
+            setEquipo({
+              id: '',
+              descripcion: '',
+              liga: '',
+              nombre: '',
+              escudo: '',
+            });
+            setOpen(true);
+          }}
+        >
+          Agregar
+        </Button>
+        <ListEquipment
+          equipos={equipos}
+          setOpen={setOpen}
+          setEquipo={setEquipo}
+        />
       </Container>
     </>
   );
