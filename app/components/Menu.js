@@ -77,7 +77,12 @@ export default function MenuComponent() {
             as={NavLink}
             to="/equipos"
           />
-          <Dropdown.Item icon="soccer" text="Equipos" />
+          <Dropdown.Item
+            icon="soccer"
+            text="Grupos"
+            as={NavLink}
+            to="/grupos"
+          />
           <Dropdown.Item icon="calendar alternate outline" text="Calendario" />
           <Dropdown.Item icon="flag checkered" text="Resultados" />
         </Dropdown.Menu>

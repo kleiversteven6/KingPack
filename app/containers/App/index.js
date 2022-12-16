@@ -25,6 +25,7 @@ import UrlPage from '../UrlPage';
 import DicePage from '../DicePage';
 import GameBingo from '../Bingo';
 import EquipmentPage from '../EquipmentPage';
+import GroupsPage from '../GroupsPage';
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
             <Route exact path="/graficas/:id" component={GraphicsPage} />
             <Route exact path="/url/:short" component={UrlPage} />
             <Route exact path="/equipos" component={EquipmentPage} />
+            <Route exact path="/grupos" component={GroupsPage} />
             <Route component={NotFoundPage} />
           </Switch>
         </Container>
