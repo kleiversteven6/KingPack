@@ -15,6 +15,8 @@ import { db } from './firebase';
 const collectionName = 'your_urls';
 const collectionlog = 'log_urlsShort';
 const collectionEquiments = 'equipos';
+const collectionGrupos = 'grupos';
+const collectionMatchs = 'enfrentamientos';
 
 export const saveWebsite = newLink =>
   addDoc(collection(db, collectionName), newLink);
@@ -22,14 +24,26 @@ export const saveWebsite = newLink =>
 export const saveEquiment = data =>
   addDoc(collection(db, collectionEquiments), data);
 
-export const updateEquiment = (id, updatedFields) =>
-  updateDoc(doc(db, collectionEquiments, id), updatedFields);
+export const saveGrupos = data =>
+  addDoc(collection(db, collectionGrupos), data);
+
+export const saveMatchs = data =>
+  addDoc(collection(db, collectionMatchs), data);
 
 export const savelog = datalog =>
   addDoc(collection(db, collectionlog), datalog);
 
 export const updateWebsite = (id, updatedFields) =>
   updateDoc(doc(db, collectionName, id), updatedFields);
+
+export const updateEquiment = (id, updatedFields) =>
+  updateDoc(doc(db, collectionEquiments, id), updatedFields);
+
+export const updateGrupos = (id, updatedFields) =>
+  updateDoc(doc(db, collectionGrupos, id), updatedFields);
+
+export const updateMatchs = (id, updatedFields) =>
+  updateDoc(doc(db, collectionMatchs, id), updatedFields);
 
 export const onGetLinks = callback => {
   const unsub = onSnapshot(collection(db, collectionName), callback);
@@ -39,12 +53,15 @@ export const onGetLinks = callback => {
 export const getWebsiteShort = short =>
   getDocs(query(collection(db, collectionName), where('short', '==', short)));
 
+export const getWebsite = id => getDoc(doc(db, collectionName, id));
 export const getWebsites = () => getDocs(collection(db, collectionName));
 export const getEquipments = () => getDocs(collection(db, collectionEquiments));
+export const getGrupos = () => getDocs(collection(db, collectionGrupos));
+export const getMatchs = () => getDocs(collection(db, collectionMatchs));
 
 export const deleteWebsite = id => deleteDoc(doc(db, collectionName, id));
-
-export const getWebsite = id => getDoc(doc(db, collectionName, id));
+export const deleteGrupos = id => deleteDoc(doc(db, collectionGrupos, id));
+export const deleteMatchs = id => deleteDoc(doc(db, collectionMatchs, id));
 
 export const updateClicksCountries = (id, updatedFields) =>
   updateDoc(doc(db, collectionName, id), updatedFields);

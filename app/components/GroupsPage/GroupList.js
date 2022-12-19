@@ -18,7 +18,7 @@ export default function GroupList({ data, teamList }) {
   return (
     <div>
       <Header as="h1" attached="top">
-        {data.name}
+        {data.text}
       </Header>
 
       <Segment secondary attached>

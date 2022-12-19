@@ -1,81 +1,115 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Divider, Grid, Modal } from 'semantic-ui-react';
+import {
+  getEquipments,
+  getGrupos,
+  getMatchs,
+  deleteGrupos,
+  deleteMatchs,
+} from '../../firebase/api';
+
 import GroupList from '../../components/GroupsPage/GroupList';
 import GroupForm from '../../components/GroupsPage/GroupForm';
 import GroupMatch from '../../components/GroupsPage/GroupMatch';
 
 export default function GroupsPage() {
-  const [update, setUpdate] = useState(null);
-  const [mod, setMod] = useState(false);
-  const [dummy, setDummy] = useState(false);
-  const [data, setData] = useState([
-    { id: 0, name: 'aaaaaaaaaa', teams: [2, 5, 6, 9, 8] },
-    { id: 1, name: 'asdsadsad', teams: [0, 1, 3, 4, 7] },
-  ]);
+  const [teamList, setTeamList] = useState([]);
+  const [rawMatchData, setRawMatchData] = useState([]);
+  const [data, setData] = useState([]);
 
-  const teamList = [
-    { key: 0, text: 'Alemania', value: 0 },
-    { key: 1, text: 'Arabia Saudita', value: 1 },
-    { key: 2, text: 'Argentina', value: 2 },
-    { key: 3, text: 'Australia', value: 3 },
-    { key: 4, text: 'Belgica', value: 4 },
-    { key: 5, text: 'Brasil', value: 5 },
-    { key: 6, text: 'Camerun', value: 6 },
-    { key: 7, text: 'Canada', value: 7 },
-    { key: 8, text: 'Costa Rica', value: 8 },
-    { key: 9, text: 'Croacia Saudita', value: 9 },
-    { key: 10, text: 'Dinamarca', value: 10 },
-    { key: 11, text: 'Ecuador', value: 11 },
-    { key: 12, text: 'España', value: 12 },
-    { key: 13, text: 'Francia', value: 13 },
-    { key: 14, text: 'Gales', value: 14 },
-    { key: 15, text: 'Ghana', value: 15 },
-    { key: 16, text: 'Inglaterra', value: 16 },
-    { key: 17, text: 'Iran Rica', value: 17 },
-    { key: 18, text: 'Japon', value: 18 },
-    { key: 19, text: 'Korea', value: 19 },
-    { key: 20, text: 'Mexico', value: 20 },
-    { key: 21, text: 'Morocco', value: 21 },
-    { key: 22, text: 'Paises Bajos', value: 22 },
-    { key: 23, text: 'Polonia', value: 23 },
-    { key: 24, text: 'Portugal', value: 24 },
-    { key: 25, text: 'Qatar', value: 25 },
-    { key: 26, text: 'Senegal', value: 26 },
-    { key: 27, text: 'Serbia', value: 27 },
-    { key: 28, text: 'Suiza', value: 28 },
-    { key: 29, text: 'Tunez', value: 29 },
-    { key: 30, text: 'USA', value: 30 },
-    { key: 31, text: 'Uruguay', value: 31 },
-  ];
+  const [showMatch, setShowMatch] = useState({ open: false, data: '' });
+  const [showForm, setShowForm] = useState(false);
+  const [update, setUpdate] = useState(null);
 
   function handleCreate() {
     setUpdate(null);
-    setMod(true);
+    setShowForm(true);
   }
 
   function handleShowMatch(e) {
-    const foundData = data.find(value => value.id === e);
-    foundData.showMatch = !foundData.showMatch;
-
-    setDummy(!dummy);
+    setShowMatch({ open: true, data: data.find(value => value.key === e) });
   }
 
   function handleUpdate(e) {
-    setUpdate(data.find(value => value.id === e));
-    setMod(true);
+    setUpdate(data.find(value => value.key === e));
+    setShowForm(true);
   }
 
-  function handleRemove(e) {
-    setData(data.filter(value => value.id !== e));
-  }
+  async function handleRemove(e) {
+    const resp = await getMatchs();
 
-  // Agregar el atributo <setMatch>
-  useEffect(() => {
-    data.forEach(value => {
-      const temp = value;
-      temp.showMatch = false;
+    resp.forEach(raw => {
+      const value = raw.data();
+
+      if (value.idGrupo === e) deleteMatchs(raw.id);
     });
-  }, []);
+
+    await deleteGrupos(e).then(() => getData());
+  }
+
+  // Armar lista de equipos
+  async function getTeams() {
+    const resp = await getEquipments();
+    const tempList = [];
+
+    resp.forEach(value => {
+      tempList.push({
+        ...{
+          key: value.id,
+          text: value.data().nombre,
+          value: value.id,
+        },
+      });
+    });
+
+    // Ordenar lista por nombre
+    tempList.sort((a, b) => {
+      if (a.text > b.text) return 1;
+      return -1;
+    });
+
+    setTeamList(tempList);
+  }
+
+  // Armar array de grupos & Inicializar datos de enfrentamientos
+  async function getData() {
+    const resp = await getGrupos();
+    const respMatch = await getMatchs();
+    const tempData = [];
+
+    resp.forEach(value => {
+      let foundMatch = false;
+
+      // Buscar algun registro del enfrentamiento del grupo. Si existe, cambiar color del boton.
+      respMatch.forEach(valua => {
+        if (valua.data().idGrupo === value.id) foundMatch = true;
+      });
+
+      tempData.push({
+        ...{
+          key: value.id,
+          text: value.data().name,
+          teams: value.data().teams,
+          matched: foundMatch,
+        },
+      });
+    });
+
+    // Ordenar lista por nombre
+    tempData.sort((a, b) => {
+      if (a.text > b.text) return 1;
+      return -1;
+    });
+
+    setData(tempData);
+    setRawMatchData(respMatch);
+  }
+
+  // Inicializar y recargar Arrays <teamList>/<data>
+  useEffect(() => {
+    getTeams();
+    getData();
+  }, [showForm, showMatch]);
 
   return (
     <Container>
@@ -89,36 +123,32 @@ export default function GroupsPage() {
 
       <Grid columns={4}>
         {data.map(value => (
-          <Grid.Column key={value.id} width={4}>
+          <Grid.Column key={value.key} width={4}>
             <Button.Group
               size="mini"
               style={{ zIndex: 1, position: 'inherit' }}
             >
               <Button
                 compact
-                primary
+                color={value.matched ? 'blue' : 'orange'}
                 icon="share alternate"
-                onClick={() => handleShowMatch(value.id)}
+                onClick={() => handleShowMatch(value.key)}
               />
               <Button
                 compact
                 primary
                 icon="pencil"
-                onClick={() => handleUpdate(value.id)}
+                onClick={() => handleUpdate(value.key)}
               />
               <Button
                 compact
                 negative
                 icon="minus"
-                onClick={() => handleRemove(value.id)}
+                onClick={() => handleRemove(value.key)}
               />
             </Button.Group>
 
-            {value.showMatch ? (
-              <GroupList data={value} teamList={teamList} />
-            ) : (
-              <GroupMatch />
-            )}
+            <GroupList data={value} teamList={teamList} />
           </Grid.Column>
         ))}
       </Grid>
@@ -126,15 +156,29 @@ export default function GroupsPage() {
       <Modal
         size="mini"
         dimmer="blurring"
-        open={mod}
+        open={showForm}
         centered={false}
-        onClose={() => setMod(false)}
+        onClose={() => setShowForm(false)}
       >
         <GroupForm
           data={data}
           teamList={teamList}
-          setMod={setMod}
+          setShowForm={setShowForm}
           update={update}
+        />
+      </Modal>
+
+      <Modal
+        dimmer="blurring"
+        open={showMatch.open}
+        centered={false}
+        onClose={() => setShowMatch({ open: false, data: '' })}
+      >
+        <GroupMatch
+          data={showMatch.data}
+          teamList={teamList}
+          setShowMatch={setShowMatch}
+          rawMatch={rawMatchData}
         />
       </Modal>
     </Container>
