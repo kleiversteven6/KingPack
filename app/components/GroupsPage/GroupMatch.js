@@ -53,12 +53,12 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
             categoria: '',
             fecha: value.date,
             fecha2: '',
-            golesCasa: 0,
-            golesPenalCasa: 0,
-            golesPenalVisit: 0,
-            golesPrroCasa: 0,
-            golesPrroVisit: 0,
-            golesVisi: 0,
+            golesCasa: '',
+            golesPenalCasa: '',
+            golesPenalVisit: '',
+            golesPrroCasa: '',
+            golesPrroVisit: '',
+            golesVisi: '',
             idCasa: value.home,
             idVisita: value.visit,
             idGanador: '',
@@ -158,7 +158,7 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
       }
     });
 
-    // De existir, organizar. De lo contrario, generar los valores
+    // De existir elementos, organizar. De lo contrario, generar los valores
     if (tempMatch.length !== 0) {
       tempMatch.sort((a, b) => {
         if (a.date > b.date) return 1;
@@ -212,13 +212,6 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
           <Segment secondary>
             <Grid centered padded>
               <Grid.Row>
-                <Grid.Column width={11}>
-                  <Button.Group fluid inverted>
-                    <Button primary content="Casa" />
-                    <Button negative content="Visita" />
-                  </Button.Group>
-                </Grid.Column>
-
                 <Grid.Column width={5}>
                   <Button
                     fluid
@@ -227,10 +220,27 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
                     content="Fecha del Enfrentamiento"
                   />
                 </Grid.Column>
+
+                <Grid.Column width={11}>
+                  <Button.Group fluid inverted>
+                    <Button primary content="Casa" />
+                    <Button negative content="Visita" />
+                  </Button.Group>
+                </Grid.Column>
               </Grid.Row>
 
               {matchData.map(value => (
                 <Grid.Row key={runCont()} style={value.error ? errStyle : {}}>
+                  <Grid.Column key={runCont()} width={5}>
+                    <Input
+                      key={runCont()}
+                      fluid
+                      type="date"
+                      value={value.date}
+                      onChange={e => handleDate(value, e)}
+                    />
+                  </Grid.Column>
+
                   <Grid.Column key={runCont()} textAlign="center" width={5}>
                     <Button
                       key={runCont()}
@@ -263,16 +273,6 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
                       color={getColor(value, 1)}
                       content={getName(value.match[1])}
                       onClick={() => handleSelect(value, 1)}
-                    />
-                  </Grid.Column>
-
-                  <Grid.Column key={runCont()} width={5}>
-                    <Input
-                      key={runCont()}
-                      fluid
-                      type="date"
-                      value={value.date}
-                      onChange={e => handleDate(value, e)}
                     />
                   </Grid.Column>
                 </Grid.Row>

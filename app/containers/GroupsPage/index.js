@@ -11,12 +11,14 @@ import {
 import GroupList from '../../components/GroupsPage/GroupList';
 import GroupForm from '../../components/GroupsPage/GroupForm';
 import GroupMatch from '../../components/GroupsPage/GroupMatch';
+import GroupResults from '../../components/GroupsPage/GroupResults';
 
 export default function GroupsPage() {
   const [teamList, setTeamList] = useState([]);
   const [rawMatchData, setRawMatchData] = useState([]);
   const [data, setData] = useState([]);
 
+  const [showResults, setShowResults] = useState(false);
   const [showMatch, setShowMatch] = useState({ open: false, data: '' });
   const [showForm, setShowForm] = useState(false);
   const [update, setUpdate] = useState(null);
@@ -109,7 +111,7 @@ export default function GroupsPage() {
   useEffect(() => {
     getTeams();
     getData();
-  }, [showForm, showMatch]);
+  }, [showForm, showMatch, showResults]);
 
   return (
     <Container>
@@ -118,6 +120,13 @@ export default function GroupsPage() {
         icon="plus"
         content="Agregar un Grupo"
         onClick={handleCreate}
+      />
+
+      <Button
+        icon="tasks"
+        color="orange"
+        content="Resultados de Enfretamientos"
+        onClick={() => setShowResults(true)}
       />
       <Divider />
 
@@ -179,6 +188,19 @@ export default function GroupsPage() {
           teamList={teamList}
           setShowMatch={setShowMatch}
           rawMatch={rawMatchData}
+        />
+      </Modal>
+
+      <Modal
+        dimmer="blurring"
+        open={showResults}
+        centered={false}
+        onClose={() => setShowResults(false)}
+      >
+        <GroupResults
+          rawData={rawMatchData}
+          teamList={teamList}
+          setShowResults={setShowResults}
         />
       </Modal>
     </Container>
