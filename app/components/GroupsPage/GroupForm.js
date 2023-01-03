@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Container,
@@ -11,9 +12,23 @@ import {
   Segment,
   Select,
 } from 'semantic-ui-react';
-import { saveGrupos, updateGrupos } from '../../firebase/api';
+import {
+  GROUPS,
+  TEAMS,
+  DATA,
+  LOADING,
+} from '../../containers/GroupsPage/constants';
+import selector from '../../containers/GroupsPage/selector';
+import { saveGroup, updateGroup } from '../../containers/GroupsPage/actions';
 
-function GroupForm({ data, teamList, setShowForm, update = null }) {
+const GroupForm = connect(
+  selector([GROUPS, TEAMS, DATA, LOADING]),
+  { saveGroup, updateGroup },
+)(Main);
+
+function Main(props) {
+  const { groupsData, teamList, data, loading } = props;
+
   const [name, setName] = useState({ txt: '', error: false });
   const [teams, setTeams] = useState([{ id: 0, parentId: '', error: false }]);
   const [selectList, setSelectList] = useState([]);
@@ -69,15 +84,20 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
       const teamsArray = [];
       teams.forEach(value => teamsArray.push(value.parentId));
 
-      if (!update) {
-        await saveGrupos({
+      if (!data) {
+        props.saveGroup({
           name: name.txt,
           teams: teamsArray,
         });
-      } else
-        await updateGrupos(update.key, { name: name.txt, teams: teamsArray });
-
-      setShowForm(false);
+      } else {
+        props.updateGroup([
+          data.key,
+          {
+            name: name.txt,
+            teams: teamsArray,
+          },
+        ]);
+      }
     }
   }
 
@@ -178,12 +198,11 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
     const tempList = [];
 
     // Filtrar de <data> los equipos ya seleccionados
-    data.forEach(value => {
+    groupsData.forEach(value => {
       value.teams.forEach(valua => {
-        if (!update)
-          filterList = filterList.filter(valui => valui.key !== valua);
+        if (!data) filterList = filterList.filter(valui => valui.key !== valua);
         else {
-          const foundFilter = update.teams.find(valui => valui === valua);
+          const foundFilter = data.teams.find(valui => valui === valua);
 
           if (typeof foundFilter === 'undefined')
             filterList = filterList.filter(valui => valui.key !== valua);
@@ -195,8 +214,8 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
     filterList.forEach(value => {
       let selected = false;
 
-      if (update) {
-        const foundSelect = update.teams.find(valua => valua === value.key);
+      if (data) {
+        const foundSelect = data.teams.find(valua => valua === value.key);
         if (typeof foundSelect !== 'undefined') selected = true;
       }
 
@@ -211,11 +230,11 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
     setSelectList(tempList);
     setShowList(tempList);
 
-    if (update) {
-      name.txt = update.text;
+    if (data) {
+      name.txt = data.text;
 
       teams.pop();
-      update.teams.forEach(value => {
+      data.teams.forEach(value => {
         teams.push({ id: teams.length, parentId: value, error: false });
       });
 
@@ -229,7 +248,7 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
     done && (
       <>
         <Header as="h3" attached="top" textAlign="center">
-          {!update ? 'Agregar un nuevo Grupo' : `Modificar ${update.text}`}
+          {!data ? 'Agregar un nuevo Grupo' : `Modificar ${data.text}`}
         </Header>
 
         <Container>
@@ -256,7 +275,7 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
                       key={d.id}
                       error={d.error}
                       options={showList}
-                      defaultValue={!update ? '' : d.parentId}
+                      defaultValue={!data ? '' : d.parentId}
                       text={getName(d.parentId)}
                       placeholder={`Equipo ${runCont()}`}
                       onChange={(e, { value }) => handleSelect(value, d.id)}
@@ -279,7 +298,9 @@ function GroupForm({ data, teamList, setShowForm, update = null }) {
               <Grid.Row>
                 <Button
                   color="green"
-                  content={!update ? 'Crear Grupo' : 'Guardar cambios'}
+                  content={!data ? 'Crear Grupo' : 'Guardar cambios'}
+                  loading={loading}
+                  disabled={loading}
                   onClick={handleSubmit}
                 />
               </Grid.Row>

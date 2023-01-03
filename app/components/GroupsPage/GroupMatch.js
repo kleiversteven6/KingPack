@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Container,
@@ -9,9 +10,29 @@ import {
   Message,
   Segment,
 } from 'semantic-ui-react';
-import { saveMatchs, updateMatchs } from '../../firebase/api';
+import selector from '../../containers/GroupsPage/selector';
+import {
+  DATA,
+  MATCHS,
+  TEAMS,
+  LOADING,
+} from '../../containers/GroupsPage/constants';
+import {
+  saveGroupMatch,
+  updateGroupMatch,
+} from '../../containers/GroupsPage/actions';
 
-export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
+const GroupMatch = connect(
+  selector([DATA, TEAMS, MATCHS, LOADING]),
+  {
+    saveGroupMatch,
+    updateGroupMatch,
+  },
+)(Main);
+
+function Main(props) {
+  const { data, teamList, loading } = props;
+
   const [matchData, setMatchData] = useState([]);
   const [done, setDone] = useState(false);
   const [msg, setMsg] = useState('');
@@ -46,36 +67,8 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
 
   function handleSubmit() {
     if (validate()) {
-      matchData.forEach(async value => {
-        if (!update) {
-          await saveMatchs({
-            idGrupo: value.id,
-            categoria: '',
-            fecha: value.date,
-            fecha2: '',
-            golesCasa: '',
-            golesPenalCasa: '',
-            golesPenalVisit: '',
-            golesPrroCasa: '',
-            golesPrroVisit: '',
-            golesVisi: '',
-            idCasa: value.home,
-            idVisita: value.visit,
-            idGanador: '',
-            penales: false,
-            prorroga: false,
-            reprogramado: false,
-          });
-        } else {
-          await updateMatchs(value.idUpdate, {
-            idCasa: value.home,
-            idVisita: value.visit,
-            fecha: value.date,
-          });
-        }
-      });
-
-      setShowMatch({ open: false });
+      if (!update) props.saveGroupMatch(matchData);
+      else props.updateGroupMatch(matchData);
     }
   }
 
@@ -137,8 +130,8 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
     return cont;
   }
 
-  async function loadMatchs() {
-    const resp = rawMatch;
+  useEffect(() => {
+    const resp = props.matchData;
     const tempMatch = [];
 
     // Asignar valores de firebase a <matchData>
@@ -195,10 +188,6 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
 
     setMatchData(tempMatch);
     setDone(true);
-  }
-
-  useEffect(() => {
-    loadMatchs();
   }, []);
 
   return (
@@ -282,6 +271,8 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
                   color="green"
                   icon="save"
                   content="Guardar cambios"
+                  loading={loading}
+                  disabled={loading}
                   onClick={handleSubmit}
                 />
               </Grid.Row>
@@ -294,3 +285,5 @@ export default function GroupMatch({ data, teamList, setShowMatch, rawMatch }) {
     )
   );
 }
+
+export default GroupMatch;

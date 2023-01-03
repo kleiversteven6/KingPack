@@ -1,8 +1,13 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+import { connect } from 'react-redux';
 import { Button, Grid, Header, Segment } from 'semantic-ui-react';
+import { TEAMS } from '../../containers/GroupsPage/constants';
+import selector from '../../containers/GroupsPage/selector';
 
-export default function GroupList({ data, teamList }) {
+const GroupList = connect(selector([TEAMS]))(Main);
+
+function Main({ data, teamList }) {
   let cont = 0;
 
   function getName(e) {
@@ -38,3 +43,5 @@ export default function GroupList({ data, teamList }) {
     </div>
   );
 }
+
+export default GroupList;
