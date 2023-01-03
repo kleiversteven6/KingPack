@@ -83,7 +83,12 @@ export default function MenuComponent() {
             as={NavLink}
             to="/grupos"
           />
-          <Dropdown.Item icon="calendar alternate outline" text="Calendario" />
+          <Dropdown.Item
+            icon="calendar alternate outline"
+            text="Calendario"
+            as={NavLink}
+            to="/calendario"
+          />
           <Dropdown.Item icon="flag checkered" text="Resultados" />
         </Dropdown.Menu>
       </Dropdown>
