@@ -6,205 +6,322 @@ import {
   Container,
   Grid,
   Header,
-  Menu,
+  Input,
+  Message,
   Segment,
-  Table,
 } from 'semantic-ui-react';
-import { setToData } from '../../containers/GroupsPage/actions';
-import { LOADING, MATCHS, TEAMS } from '../../containers/GroupsPage/constants';
 import selector from '../../containers/GroupsPage/selector';
+import {
+  DB_MATCHS,
+  DB_TEAMS,
+  MATCHDATA,
+  LOADING,
+} from '../../containers/GroupsPage/constants';
+import {
+  saveGroupMatch,
+  updateGroupMatch,
+  setResultData,
+} from '../../containers/GroupsPage/actions';
 
-const GroupMatchList = connect(
-  selector([MATCHS, TEAMS, LOADING]),
-  { setToData },
+const GroupMatch = connect(
+  selector([DB_MATCHS, DB_TEAMS, MATCHDATA, LOADING]),
+  {
+    saveGroupMatch,
+    updateGroupMatch,
+    setResultData,
+  },
 )(Main);
 
 function Main(props) {
-  const { matchData, teamList, loading } = props;
+  const { matchsDB, teamsDB, matchData, loading } = props;
 
-  const [page, setPage] = useState({ now: 1, left: false, right: false });
   const [data, setData] = useState([]);
+  const [done, setDone] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const [update, setUpdate] = useState(false);
+  const [dummy, setDummy] = useState(false);
+  const errStyle = {
+    backgroundColor: 'rgb(255,240,250)',
+    border: '1px solid red',
+    borderRadius: '5px',
+  };
   let cont = 0;
 
-  function loadPage() {
-    const min = (page.now - 1) * 10;
-    const max = page.now * 10;
+  function handleSelect(obj, e) {
+    const m = e === 0 ? 1 : 0;
+    const temp = obj;
 
-    runCont(true);
+    temp.home = obj.match[e];
+    temp.visit = obj.match[m];
+    temp.error = false;
 
-    if (cont > min && cont <= max) return true;
-    return false;
+    setDummy(!dummy);
   }
 
-  function handlePage(e) {
-    let { now, left, right } = page;
-    let limit;
+  function handleDate(obj, e) {
+    const temp = obj;
+    temp.date = e.target.value;
+    temp.error = false;
 
-    if (typeof e === 'object') limit = Math.floor(e.length / 10) + 1;
-    else limit = Math.floor(data.length / 10) + 1;
+    setDummy(!dummy);
+  }
 
-    if (e === 'prev') now -= 1;
-    if (e === 'next') now += 1;
+  function handleVS(e) {
+    matchsDB.forEach(raw => {
+      const value = raw.data();
 
-    if (now === 1) left = false;
-    else left = true;
+      if (raw.id === e.idUpdate) {
+        props.setResultData({
+          id: raw.id,
+          fecha: value.fecha,
+          idCasa: value.idCasa,
+          idVisita: value.idVisita,
+          golesCasa: value.golesCasa,
+          golesVisi: value.golesVisi,
+          golesPrroCasa: value.golesPrroCasa,
+          golesPrroVisit: value.golesPrroVisit,
+        });
+      }
+    });
+  }
 
-    if (now === limit) right = false;
-    else right = true;
+  function handleSubmit() {
+    if (validate()) {
+      if (!update) props.saveGroupMatch(data);
+      else props.updateGroupMatch(data);
+    }
+  }
 
-    setPage({ now, left, right });
+  function validate() {
+    let errNoSelect = false;
+    let errDate = false;
+
+    data.forEach(value => {
+      const gulty = value;
+
+      if (value.home === '') {
+        errNoSelect = true;
+        gulty.error = true;
+      }
+      if (value.date === '') {
+        errDate = true;
+        gulty.error = true;
+      }
+    });
+
+    if (errNoSelect || errDate) {
+      const errMsg = [];
+
+      if (errNoSelect)
+        errMsg.push(
+          <Message.Item
+            key={0}
+            content="Debe seleccionar los equipos que jugaran en casa."
+          />,
+        );
+
+      if (errDate)
+        errMsg.push(
+          <Message.Item key={1} content="Las fechas deben ser asignadas" />,
+        );
+
+      setMsg(<Message color="red" content={errMsg} />);
+      return false;
+    }
+
+    setMsg('');
+    return true;
+  }
+
+  function getColor(obj, e) {
+    if (obj.home === '') return 'grey';
+    if (obj.home === obj.match[e]) return 'blue';
+
+    return 'red';
   }
 
   function getName(e) {
-    const foundName = teamList.find(value => value.key === e);
+    const foundName = teamsDB.find(value => value.key === e);
     return foundName.text;
   }
 
-  function runCont(e = false) {
-    if (e) cont += 1;
+  function runCont() {
+    cont += 1;
     return cont;
   }
 
   useEffect(() => {
-    const temp = [];
+    const tempMatch = [];
 
-    matchData.forEach(raw => {
+    // Asignar valores de firebase a <data>
+    matchsDB.forEach(raw => {
       const value = raw.data();
 
-      temp.push({
-        id: raw.id,
-        fecha: value.fecha,
-        idCasa: value.idCasa,
-        idVisita: value.idVisita,
-        golesCasa: value.golesCasa,
-        golesVisi: value.golesVisi,
-        golesPenalCasa: value.golesPenalCasa,
-        golesPenalVisit: value.golesPenalVisit,
-        golesPrroCasa: value.golesPrroCasa,
-        golesPrroVisit: value.golesPrroVisit,
+      if (value.idGrupo === matchData.key) {
+        tempMatch.push({
+          idUpdate: raw.id,
+          id: matchData.key,
+          home: value.idCasa,
+          visit: value.idVisita,
+          date: value.fecha,
+          match: [value.idCasa, value.idVisita],
+          error: false,
+        });
+      }
+    });
+
+    // De existir elementos, organizar. De lo contrario, generar los valores
+    if (tempMatch.length !== 0) {
+      tempMatch.sort((a, b) => {
+        if (a.date > b.date) return 1;
+        return -1;
       });
-    });
 
-    temp.sort((a, b) => {
-      if (a.fecha > b.fecha) return 1;
-      return -1;
-    });
+      setUpdate(true);
+    } else {
+      // Generar enfrentamientos no repetidos entre todos los equipos
+      matchData.teams.forEach(a => {
+        matchData.teams.forEach(b => {
+          let oc = true;
 
-    setData(temp);
-    handlePage(temp);
-  }, [matchData]);
+          tempMatch.forEach(value => {
+            if (value.match[0] === a && value.match[1] === b) oc = false;
+            if (value.match[0] === b && value.match[1] === a) oc = false;
+            if (a === b) oc = false;
+          });
+
+          if (oc)
+            tempMatch.push({
+              id: matchData.key,
+              home: '',
+              visit: '',
+              date: '',
+              match: [a, b],
+              error: false,
+            });
+        });
+      });
+
+      tempMatch.shift();
+    }
+
+    setData(tempMatch);
+    setDone(true);
+  }, []);
 
   return (
-    <>
-      <Header as="h1" attached="top" textAlign="center">
-        Resultados de Enfrentamientos
-      </Header>
-      <Container fluid>
-        <Segment secondary loading={loading}>
-          <Table basic="very">
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell width={3}>
-                  <Button fluid color="vk" icon="calendar" content="Fecha" />
-                </Table.HeaderCell>
+    done && (
+      <>
+        <Header as="h1" attached="top" textAlign="center">
+          Enfrentamientos de {matchData.text}
+        </Header>
 
-                <Table.HeaderCell width={13}>
-                  <Button.Group fluid>
+        <Container>
+          <Segment secondary>
+            <Grid centered padded>
+              <Grid.Row>
+                <Grid.Column width={5}>
+                  <Button
+                    fluid
+                    color="vk"
+                    icon="calendar"
+                    content="Fecha del Enfrentamiento"
+                  />
+                </Grid.Column>
+
+                <Grid.Column width={11}>
+                  <Button.Group fluid inverted>
                     <Button primary content="Casa" />
                     <Button negative content="Visita" />
                   </Button.Group>
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
+                </Grid.Column>
+              </Grid.Row>
 
-            <Table.Body>
-              {data.map(
-                value =>
-                  loadPage() && (
-                    <Table.Row key={runCont()} textAlign="center">
-                      <Table.Cell width={3}>
-                        <Button basic fluid content={value.fecha} />
-                      </Table.Cell>
-
-                      <Table.Cell width={13}>
-                        <Grid>
-                          <Grid.Column width={7}>
-                            <Button
-                              basic
-                              fluid
-                              primary
-                              floated="left"
-                              content={getName(value.idCasa)}
-                            />
-                          </Grid.Column>
-
-                          <Grid.Column
-                            verticalAlign="middle"
-                            textAlign="center"
-                            width={2}
-                          >
-                            <Button
-                              basic
-                              compact
-                              secondary
-                              size="mini"
-                              color="orange"
-                              onClick={() => props.setToData(value)}
-                              style={{
-                                padding: '12px',
-                                margin: '-50px',
-                                borderRadius: '30px',
-                                fontSize: '16px',
-                              }}
-                            >
-                              <b>
-                                <i>vs</i>
-                              </b>
-                            </Button>
-                          </Grid.Column>
-
-                          <Grid.Column width={7}>
-                            <Button
-                              basic
-                              fluid
-                              negative
-                              floated="right"
-                              content={getName(value.idVisita)}
-                            />
-                          </Grid.Column>
-                        </Grid>
-                      </Table.Cell>
-                    </Table.Row>
-                  ),
-              )}
-            </Table.Body>
-
-            <Table.Footer>
-              <Table.Row>
-                <Table.HeaderCell colSpan="3">
-                  <Menu floated="right" pagination>
-                    <Menu.Item
-                      as="a"
-                      icon="chevron left"
-                      disabled={!page.left}
-                      onClick={() => handlePage('prev')}
+              {data.map(value => (
+                <Grid.Row key={runCont()} style={value.error ? errStyle : {}}>
+                  <Grid.Column width={5}>
+                    <Input
+                      fluid
+                      type="date"
+                      value={value.date}
+                      onChange={e => handleDate(value, e)}
                     />
-                    <Menu.Item content={page.now} />
-                    <Menu.Item
-                      as="a"
-                      icon="chevron right"
-                      disabled={!page.right}
-                      onClick={() => handlePage('next')}
+                  </Grid.Column>
+
+                  <Grid.Column textAlign="center" width={5}>
+                    <Button
+                      basic
+                      fluid
+                      floated="left"
+                      color={getColor(value, 0)}
+                      content={getName(value.match[0])}
+                      onClick={() => handleSelect(value, 0)}
                     />
-                  </Menu>
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Footer>
-          </Table>
-        </Segment>
-      </Container>
-    </>
+                  </Grid.Column>
+
+                  <Grid.Column
+                    verticalAlign="middle"
+                    textAlign="center"
+                    width={1}
+                  >
+                    {update ? (
+                      <Button
+                        basic
+                        compact
+                        secondary
+                        size="mini"
+                        loading={loading}
+                        disabled={loading}
+                        onClick={() => handleVS(value)}
+                        style={{
+                          padding: '12px',
+                          margin: '-50px',
+                          borderRadius: '30px',
+                          fontSize: '16px',
+                        }}
+                      >
+                        <b>
+                          <i>vs</i>
+                        </b>
+                      </Button>
+                    ) : (
+                      <b>
+                        <i>vs</i>
+                      </b>
+                    )}
+                  </Grid.Column>
+
+                  <Grid.Column textAlign="center" width={5}>
+                    <Button
+                      basic
+                      fluid
+                      floated="right"
+                      color={getColor(value, 1)}
+                      content={getName(value.match[1])}
+                      onClick={() => handleSelect(value, 1)}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+              ))}
+              <Grid.Row>
+                <Button
+                  color="green"
+                  icon="save"
+                  content="Guardar cambios"
+                  loading={loading}
+                  disabled={loading}
+                  onClick={handleSubmit}
+                />
+              </Grid.Row>
+
+              <Grid.Row>{msg}</Grid.Row>
+            </Grid>
+          </Segment>
+        </Container>
+      </>
+    )
   );
 }
 
-export default GroupMatchList;
+export default GroupMatch;

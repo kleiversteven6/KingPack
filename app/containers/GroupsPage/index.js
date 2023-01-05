@@ -1,61 +1,51 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Button, Container, Divider, Grid, Modal } from 'semantic-ui-react';
+import {
+  Button,
+  Container,
+  Divider,
+  Grid,
+  Header,
+  Modal,
+} from 'semantic-ui-react';
 import {
   getDB,
-  setToData,
-  createGroupForm,
-  updateGroupForm,
+  setFormData,
+  setMatchData,
+  setResultData,
   deleteGroup,
-  openGroupMatch,
-  openAllMatchs,
-  closeForm,
-  closeGroupMatch,
-  closeAllMatchs,
 } from './actions';
 import {
-  GROUPS,
-  SHOWALLMATCHS,
-  SHOWFORM,
-  SHOWMATCH,
-  DATA,
+  DB_GROUPS,
+  FORMDATA,
+  MATCHDATA,
+  RESULTDATA,
   LOADING,
 } from './constants';
 import selector from './selector';
 
 import GroupList from '../../components/GroupsPage/GroupList';
-import GroupForm from '../../components/GroupsPage/GroupForm';
 import GroupMatch from '../../components/GroupsPage/GroupMatch';
-import GroupMatchResults from '../../components/GroupsPage/GroupMatchResults';
+import GroupForm from '../../components/GroupsPage/GroupForm';
 import GroupMatchList from '../../components/GroupsPage/GroupMatchList';
+import GroupMatchResults from '../../components/GroupsPage/GroupMatchResults';
 
 // USO DE CONNECT DE REDUX:
 const GroupsPage = connect(
-  selector([GROUPS, SHOWFORM, SHOWMATCH, SHOWALLMATCHS, DATA, LOADING]), // Primero selectores
+  selector([DB_GROUPS, FORMDATA, MATCHDATA, RESULTDATA, LOADING]), // Primero selectores
   {
     getDB,
-    setToData,
-    createGroupForm,
-    updateGroupForm,
+    setFormData,
+    setMatchData,
+    setResultData,
     deleteGroup,
-    openGroupMatch,
-    openAllMatchs,
-    closeForm,
-    closeGroupMatch,
-    closeAllMatchs,
   }, // Despues Acciones
 )(Main); // Al final la funcion del componente.
 
 function Main(props) {
-  const {
-    groupsData,
-    showForm,
-    showMatch,
-    showAllMatchs,
-    data,
-    loading,
-  } = props;
+  const { groupsDB, formData, matchData, resultData, loading } = props;
+  const [showMatch, setShowMatch] = useState(false);
 
   // Inicializar Redux DB.
   useEffect(() => {
@@ -69,19 +59,19 @@ function Main(props) {
         icon="plus"
         content="Agregar un Grupo"
         disabled={loading}
-        onClick={props.createGroupForm}
+        onClick={() => props.setFormData(null)}
       />
       <Button
-        icon="tasks"
-        color="orange"
-        content="Lista de Enfretamientos"
+        icon="columns"
         disabled={loading}
-        onClick={props.openAllMatchs}
+        color={!showMatch ? 'orange' : 'green'}
+        content={!showMatch ? 'Enfrentamientos' : 'Grupos'}
+        onClick={() => setShowMatch(!showMatch)}
       />
       <Divider />
 
       <Grid columns={4}>
-        {groupsData.map(value => (
+        {groupsDB.map(value => (
           <Grid.Column key={value.key} width={4}>
             <Button.Group
               size="mini"
@@ -89,15 +79,15 @@ function Main(props) {
             >
               <Button
                 compact
-                color={value.matched ? 'blue' : 'orange'}
                 icon="share alternate"
-                onClick={() => props.openGroupMatch(value)}
+                color={value.matched ? 'blue' : 'orange'}
+                onClick={() => props.setMatchData(value)}
               />
               <Button
                 compact
                 primary
                 icon="pencil"
-                onClick={() => props.updateGroupForm(value)}
+                onClick={() => props.setFormData(value)}
               />
               <Button
                 compact
@@ -107,7 +97,17 @@ function Main(props) {
               />
             </Button.Group>
 
-            <GroupList data={value} />
+            <div>
+              <Header as="h1" attached="top">
+                {value.text}
+              </Header>
+
+              {!showMatch ? (
+                <GroupList data={value} />
+              ) : (
+                <GroupMatch data={value} />
+              )}
+            </div>
           </Grid.Column>
         ))}
       </Grid>
@@ -115,35 +115,26 @@ function Main(props) {
       <Modal
         size="mini"
         dimmer="blurring"
-        open={showForm}
         centered={false}
-        onClose={props.closeForm}
+        open={typeof formData !== 'undefined'}
+        onClose={() => props.setFormData(undefined)}
       >
         <GroupForm />
       </Modal>
 
       <Modal
         dimmer="blurring"
-        open={showMatch}
         centered={false}
-        onClose={props.closeGroupMatch}
-      >
-        <GroupMatch />
-      </Modal>
-
-      <Modal
-        dimmer="blurring"
-        open={showAllMatchs}
-        centered={false}
-        onClose={props.closeAllMatchs}
+        open={typeof matchData !== 'undefined'}
+        onClose={() => props.setMatchData(undefined)}
       >
         <GroupMatchList />
 
         <Modal
           size="small"
           dimmer="blurring"
-          open={typeof data === 'object'}
-          onClose={() => props.setToData(undefined)}
+          open={typeof resultData !== 'undefined'}
+          onClose={() => props.setResultData(undefined)}
         >
           <GroupMatchResults />
         </Modal>

@@ -12,17 +12,24 @@ import {
   Segment,
   Table,
 } from 'semantic-ui-react';
-import { DATA, TEAMS, LOADING } from '../../containers/GroupsPage/constants';
-import { updateMatch, setToData } from '../../containers/GroupsPage/actions';
+import {
+  RESULTDATA,
+  DB_TEAMS,
+  LOADING,
+} from '../../containers/GroupsPage/constants';
+import {
+  updateMatch,
+  setResultData,
+} from '../../containers/GroupsPage/actions';
 import selector from '../../containers/GroupsPage/selector';
 
 const GroupMatchResults = connect(
-  selector([DATA, TEAMS, LOADING]),
-  { updateMatch, setToData },
+  selector([RESULTDATA, DB_TEAMS, LOADING]),
+  { updateMatch, setResultData },
 )(Main);
 
 function Main(props) {
-  const { data, teamList, loading } = props;
+  const { resultData, teamsDB, loading } = props;
   const [inputs, setInputs] = useState([]);
 
   const [msg, setMsg] = useState('');
@@ -51,24 +58,20 @@ function Main(props) {
     if (validate()) {
       let update = false;
 
-      if (inputs[0].casa !== data.golesCasa) update = true;
-      if (inputs[0].visita !== data.golesVisi) update = true;
-      if (inputs[1].casa !== data.golesPrroCasa) update = true;
-      if (inputs[1].visita !== data.golesPrroVisit) update = true;
-      if (inputs[2].casa !== data.golesPenalCasa) update = true;
-      if (inputs[2].visita !== data.golesPenalVisit) update = true;
+      if (inputs[0].casa !== resultData.golesCasa) update = true;
+      if (inputs[0].visita !== resultData.golesVisi) update = true;
+      if (inputs[1].casa !== resultData.golesPrroCasa) update = true;
+      if (inputs[1].visita !== resultData.golesPrroVisit) update = true;
 
       if (update)
         props.updateMatch({
-          id: data.id,
+          id: resultData.id,
           golesCasa: inputs[0].casa,
           golesVisi: inputs[0].visita,
           golesPrroCasa: inputs[1].casa,
           golesPrroVisit: inputs[1].visita,
-          golesPenalCasa: inputs[2].casa,
-          golesPenalVisit: inputs[2].visita,
         });
-      else props.setToData(undefined);
+      else props.setResultData(undefined);
     }
   }
 
@@ -103,12 +106,12 @@ function Main(props) {
   }
 
   function getName(e) {
-    const foundName = teamList.find(value => value.key === e);
+    const foundName = teamsDB.find(value => value.key === e);
     return foundName.text;
   }
 
   function getIcon(e) {
-    const foundIcon = teamList.find(value => value.key === e);
+    const foundIcon = teamsDB.find(value => value.key === e);
     return foundIcon.icon;
   }
 
@@ -116,22 +119,15 @@ function Main(props) {
     setInputs([
       {
         id: 'Goles',
-        casa: data.golesCasa,
-        visita: data.golesVisi,
+        casa: resultData.golesCasa,
+        visita: resultData.golesVisi,
         errCasa: false,
         errVisi: false,
       },
       {
         id: 'Prorroga',
-        casa: data.golesPrroCasa,
-        visita: data.golesPrroVisit,
-        errCasa: false,
-        errVisi: false,
-      },
-      {
-        id: 'Penales',
-        casa: data.golesPenalCasa,
-        visita: data.golesPenalVisit,
+        casa: resultData.golesPrroCasa,
+        visita: resultData.golesPrroVisit,
         errCasa: false,
         errVisi: false,
       },
@@ -161,7 +157,7 @@ function Main(props) {
                     <Image
                       size="mini"
                       floated="left"
-                      src={getIcon(data.idCasa)}
+                      src={getIcon(resultData.idCasa)}
                     />
                   </GridColumn>
 
@@ -171,7 +167,7 @@ function Main(props) {
                       fluid
                       primary
                       floated="left"
-                      content={getName(data.idCasa)}
+                      content={getName(resultData.idCasa)}
                     />
                   </Grid.Column>
 
@@ -191,7 +187,7 @@ function Main(props) {
                       fluid
                       negative
                       floated="right"
-                      content={getName(data.idVisita)}
+                      content={getName(resultData.idVisita)}
                     />
                   </Grid.Column>
 
@@ -199,7 +195,7 @@ function Main(props) {
                     <Image
                       size="mini"
                       floated="right"
-                      src={getIcon(data.idVisita)}
+                      src={getIcon(resultData.idVisita)}
                     />
                   </GridColumn>
                 </Grid>
@@ -250,7 +246,7 @@ function Main(props) {
                   <Grid.Column width={8}>
                     <Button.Group>
                       <Button color="vk" icon="calendar" content="Fecha" />
-                      <Button basic color="grey" content={data.fecha} />
+                      <Button basic color="grey" content={resultData.fecha} />
                     </Button.Group>
                   </Grid.Column>
 

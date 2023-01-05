@@ -63,5 +63,5 @@ function buildData(e) {
     return -1;
   });
 
-  return { groups: tempData, matchs, teams: tempList };
+  return { matchsDB: matchs, groupsDB: tempData, teamsDB: tempList };
 }

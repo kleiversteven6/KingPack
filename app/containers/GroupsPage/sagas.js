@@ -15,8 +15,9 @@ import {
   DB_LOADED,
   DB_REQUEST,
   DB_HARD_REQUEST,
+  DB_MATCHS,
   RESET_VIEW,
-  SET_TO_DATA,
+  SET_RESULTDATA,
   SET_LOADING,
   DELETE_GROUP,
   SAVE_GROUP,
@@ -24,7 +25,6 @@ import {
   UPDATE_GROUP,
   UPDATE_GROUP_MATCH,
   UPDATE_MATCH,
-  MATCHS,
 } from './constants';
 
 export default function* watcherSaga() {
@@ -89,14 +89,14 @@ function* workerUpdateGroupMatch(action) {
 function* workerUpdateMatch(action) {
   yield call(updateMatch, action.payload);
   yield put({ type: DB_REQUEST });
-  yield put({ type: SET_TO_DATA, payload: undefined });
+  yield put({ type: SET_RESULTDATA, payload: undefined });
 }
 
 function* workerDeleteGroup(action) {
-  const rawMatch = yield select(selector([MATCHS]));
+  const rawMatch = yield select(selector([DB_MATCHS]));
 
   yield call(deleteGroup, {
-    rawMatch: rawMatch.matchData,
+    rawMatch: rawMatch.matchsDB,
     e: action.payload,
   });
   yield put({ type: DB_HARD_REQUEST });

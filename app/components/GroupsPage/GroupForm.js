@@ -13,21 +13,21 @@ import {
   Select,
 } from 'semantic-ui-react';
 import {
-  GROUPS,
-  TEAMS,
-  DATA,
+  DB_GROUPS,
+  DB_TEAMS,
+  FORMDATA,
   LOADING,
 } from '../../containers/GroupsPage/constants';
 import selector from '../../containers/GroupsPage/selector';
 import { saveGroup, updateGroup } from '../../containers/GroupsPage/actions';
 
 const GroupForm = connect(
-  selector([GROUPS, TEAMS, DATA, LOADING]),
+  selector([DB_GROUPS, DB_TEAMS, FORMDATA, LOADING]),
   { saveGroup, updateGroup },
 )(Main);
 
 function Main(props) {
-  const { groupsData, teamList, data, loading } = props;
+  const { groupsDB, teamsDB, formData, loading } = props;
 
   const [name, setName] = useState({ txt: '', error: false });
   const [teams, setTeams] = useState([{ id: 0, parentId: '', error: false }]);
@@ -84,14 +84,14 @@ function Main(props) {
       const teamsArray = [];
       teams.forEach(value => teamsArray.push(value.parentId));
 
-      if (!data) {
+      if (!formData) {
         props.saveGroup({
           name: name.txt,
           teams: teamsArray,
         });
       } else {
         props.updateGroup([
-          data.key,
+          formData.key,
           {
             name: name.txt,
             teams: teamsArray,
@@ -166,7 +166,7 @@ function Main(props) {
 
   // Obtener nombre desde la lista Madre
   function getName(id) {
-    const nameFound = teamList.find(value => value.key === id);
+    const nameFound = teamsDB.find(value => value.key === id);
 
     if (nameFound) return nameFound.text;
     return '';
@@ -194,15 +194,16 @@ function Main(props) {
 
   // Filtrar equipos seleccionados en otros grupos
   useEffect(() => {
-    let filterList = teamList;
+    let filterList = teamsDB;
     const tempList = [];
 
-    // Filtrar de <data> los equipos ya seleccionados
-    groupsData.forEach(value => {
+    // Filtrar de <formData> los equipos ya seleccionados
+    groupsDB.forEach(value => {
       value.teams.forEach(valua => {
-        if (!data) filterList = filterList.filter(valui => valui.key !== valua);
+        if (!formData)
+          filterList = filterList.filter(valui => valui.key !== valua);
         else {
-          const foundFilter = data.teams.find(valui => valui === valua);
+          const foundFilter = formData.teams.find(valui => valui === valua);
 
           if (typeof foundFilter === 'undefined')
             filterList = filterList.filter(valui => valui.key !== valua);
@@ -214,8 +215,8 @@ function Main(props) {
     filterList.forEach(value => {
       let selected = false;
 
-      if (data) {
-        const foundSelect = data.teams.find(valua => valua === value.key);
+      if (formData) {
+        const foundSelect = formData.teams.find(valua => valua === value.key);
         if (typeof foundSelect !== 'undefined') selected = true;
       }
 
@@ -230,11 +231,11 @@ function Main(props) {
     setSelectList(tempList);
     setShowList(tempList);
 
-    if (data) {
-      name.txt = data.text;
+    if (formData) {
+      name.txt = formData.text;
 
       teams.pop();
-      data.teams.forEach(value => {
+      formData.teams.forEach(value => {
         teams.push({ id: teams.length, parentId: value, error: false });
       });
 
@@ -248,7 +249,7 @@ function Main(props) {
     done && (
       <>
         <Header as="h3" attached="top" textAlign="center">
-          {!data ? 'Agregar un nuevo Grupo' : `Modificar ${data.text}`}
+          {!formData ? 'Agregar un nuevo Grupo' : `Modificar ${formData.text}`}
         </Header>
 
         <Container>
@@ -275,7 +276,7 @@ function Main(props) {
                       key={d.id}
                       error={d.error}
                       options={showList}
-                      defaultValue={!data ? '' : d.parentId}
+                      defaultValue={!formData ? '' : d.parentId}
                       text={getName(d.parentId)}
                       placeholder={`Equipo ${runCont()}`}
                       onChange={(e, { value }) => handleSelect(value, d.id)}
@@ -298,7 +299,7 @@ function Main(props) {
               <Grid.Row>
                 <Button
                   color="green"
-                  content={!data ? 'Crear Grupo' : 'Guardar cambios'}
+                  content={!formData ? 'Crear Grupo' : 'Guardar cambios'}
                   loading={loading}
                   disabled={loading}
                   onClick={handleSubmit}

@@ -1,11 +1,10 @@
 import {
-  GROUPS,
-  MATCHS,
-  SHOWFORM,
-  SHOWMATCH,
-  SHOWALLMATCHS,
-  TEAMS,
-  DATA,
+  DB_MATCHS,
+  DB_GROUPS,
+  DB_TEAMS,
+  FORMDATA,
+  MATCHDATA,
+  RESULTDATA,
   LOADING,
 } from './constants';
 
@@ -14,14 +13,15 @@ export default function selector(e) {
     const select = {};
 
     e.forEach(value => {
-      if (value === GROUPS) select.groupsData = state.GroupsReducer.groups;
-      if (value === TEAMS) select.teamList = state.GroupsReducer.teams;
-      if (value === MATCHS) select.matchData = state.GroupsReducer.matchs;
-      if (value === SHOWFORM) select.showForm = state.GroupsReducer.showForm;
-      if (value === SHOWMATCH) select.showMatch = state.GroupsReducer.showMatch;
-      if (value === SHOWALLMATCHS)
-        select.showAllMatchs = state.GroupsReducer.showAllMatchs;
-      if (value === DATA) select.data = state.GroupsReducer.data;
+      if (value === DB_MATCHS) select.matchsDB = state.GroupsReducer.matchsDB;
+      if (value === DB_GROUPS) select.groupsDB = state.GroupsReducer.groupsDB;
+      if (value === DB_TEAMS) select.teamsDB = state.GroupsReducer.teamsDB;
+
+      if (value === FORMDATA) select.formData = state.GroupsReducer.formData;
+      if (value === MATCHDATA) select.matchData = state.GroupsReducer.matchData;
+      if (value === RESULTDATA)
+        select.resultData = state.GroupsReducer.resultData;
+
       if (value === LOADING) select.loading = state.GroupsReducer.loading;
     });
 
