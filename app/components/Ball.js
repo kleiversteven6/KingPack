@@ -18,11 +18,11 @@ class Ball extends Component {
   init() {
     // creating scene
     scene[this.num] = new THREE.Scene();
-    scene[this.num].background = new THREE.Color('#FFFFFF');
+    scene[this.num].background = null;
     // add camera
 
-    camera[this.num] = new THREE.PerspectiveCamera(75, 190 / 100);
-    renderer[this.num] = new THREE.WebGLRenderer();
+    camera[this.num] = new THREE.PerspectiveCamera(10, 190 / 100);
+    renderer[this.num] = new THREE.WebGLRenderer({ alpha: true });
     document.body.appendChild(renderer[this.num].domElement);
 
     // add geometry
@@ -34,15 +34,15 @@ class Ball extends Component {
 
     const geometry = new THREE.SphereGeometry(6, 32, 16);
     const material = new THREE.MeshBasicMaterial({
-      color: '#9DD1FF',
+      color: '#FFFFFF',
       map: texture,
-      overdraw: 0.8,
+      overdraw: 1,
     });
     esfera[this.num] = new THREE.Mesh(geometry, material);
 
     scene[this.num].add(esfera[this.num]);
 
-    camera[this.num].position.z = 12;
+    camera[this.num].position.z = 70;
 
     return renderer[this.num].domElement;
   }
@@ -62,7 +62,7 @@ class Ball extends Component {
   }
 
   render() {
-    return <div id={`Render-${this.num}`} />;
+    return <div className="balls" id={`Render-${this.num}`} />;
   }
 }
 

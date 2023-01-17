@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Grid, GridColumn, GridRow, Table } from 'semantic-ui-react';
-
+import { Animated } from 'react-animated-css';
+import { Button, Grid, GridColumn, GridRow, Segment } from 'semantic-ui-react';
 import logo from '../../public/assets/logoking.png';
+import Ball from './Ball';
+import Carton from './Carton';
+
 let bingo = [];
 export default function Mesa() {
   const carton = [
@@ -29,7 +32,9 @@ export default function Mesa() {
         value: 'image',
         background: {
           backgroundImage: `url(${logo})`,
-          backgroundSize: 'cover',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
         },
       },
       { id: 'G', col: 3, min: 46, max: 60, value: 0 },
@@ -86,61 +91,24 @@ export default function Mesa() {
   return (
     <>
       <Grid>
-        <GridRow>
-          <GridColumn width={2}>
-            <Button color="green" basic onClick={() => loadCardBoard()}>
-              Jugar
-            </Button>
+        <GridRow textAlign="center">
+          <GridColumn computer={2} mobile={16}>
+            <Segment basic>
+              <Button color="green" basic onClick={() => loadCardBoard()}>
+                Jugar
+              </Button>
+            </Segment>
           </GridColumn>
-          <GridColumn width={10}>
-            <Table
-              columns={5}
-              celled
-              attached="top"
-              basic
-              compact="very"
-              collapsing
-              className="cardboard"
-              textAlign="center"
-              verticalAlign="middle"
-            >
-              <Table.Header color="teal">
-                <Table.Row>
-                  <Table.HeaderCell>B</Table.HeaderCell>
-                  <Table.HeaderCell>I</Table.HeaderCell>
-                  <Table.HeaderCell>N</Table.HeaderCell>
-                  <Table.HeaderCell>G</Table.HeaderCell>
-                  <Table.HeaderCell>O</Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-
-              <Table.Body>
-                {cardboard.map(row => (
-                  <Table.Row key={row[0].col}>
-                    <Table.Cell key={row[0].id + row[0].col}>
-                      {row[0].value}
-                    </Table.Cell>
-                    <Table.Cell key={row[1].id + row[1].col}>
-                      {row[1].value}
-                    </Table.Cell>
-                    <Table.Cell
-                      key={row[2].id + row[2].col}
-                      style={row[2].background}
-                    >
-                      {row[2].value !== 'image' && row[2].value}
-                    </Table.Cell>
-                    <Table.Cell key={row[3].id + row[3].col}>
-                      {row[3].value}
-                    </Table.Cell>
-                    <Table.Cell key={row[4].id + row[4].col}>
-                      {row[4].value}
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
+          <GridColumn computer={10} mobile={16}>
+            <Carton cardboard={cardboard} />
           </GridColumn>
-          <GridColumn width={4} />
+          <GridColumn computer={1} mobile={16}>
+            <Ball num="01" style={{ width: '80px' }} />
+            <Ball num="02" />
+            <Ball num="03" />
+            <Ball num="04" />
+            <Ball num="05" />
+          </GridColumn>
         </GridRow>
       </Grid>
     </>

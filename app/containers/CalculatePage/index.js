@@ -17,7 +17,7 @@ import './CalculatePage.css';
 export default function CalculatePage() {
   const [bet, setBet] = useState('');
   const [dummy, setDummy] = useState('');
-  const [format, setFormat] = useState('d');
+  const [format, setFormat] = useState('');
   const [quotes, setQuotes] = useState([
     {
       id: 1,
@@ -56,6 +56,34 @@ export default function CalculatePage() {
     },
     {
       id: 6,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 7,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 8,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 9,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+    },
+    {
+      id: 10,
       logro: '',
       americano: 0,
       fraccionario: 0,
@@ -185,7 +213,7 @@ export default function CalculatePage() {
     setQuotes(quotes.filter(quote => quote.id !== id));
   };
 
-  const editQuote = (id, e) => {
+  const editQuote = (id, e, v = '') => {
     setDummy(e);
 
     const foundQuote = quotes.find(quote => quote.id === id);
@@ -194,26 +222,27 @@ export default function CalculatePage() {
     foundQuote.decimal = 0;
     foundQuote.americano = 0;
     foundQuote.fraccionario = '0/0';
-
+    let f = format;
+    if (v !== '') {
+      f = v;
+    }
     if (foundQuote) {
-      switch (format) {
+      switch (f) {
         case 'd': {
           if (e > 1) {
-            foundQuote.decimal = e;
+            foundQuote.decimal = e.toFixed(2);
             foundQuote.americano = toGring(e);
             foundQuote.fraccionario = toFrac(e);
           }
-
           break;
         }
-
         case 'a': {
           let ok;
 
           if (e < 0) ok = 1 - 100 / e;
           else ok = 1 + e / 100;
 
-          foundQuote.decimal = ok;
+          foundQuote.decimal = ok.toFixed(2);
           foundQuote.americano = e;
           foundQuote.fraccionario = toFrac(ok);
 
@@ -241,13 +270,12 @@ export default function CalculatePage() {
 
           const z = Number(well);
 
-          foundQuote.decimal = z;
+          foundQuote.decimal = z.toFixed(2);
           foundQuote.americano = toGring(z);
           foundQuote.fraccionario = e;
 
           break;
         }
-
         default:
           break;
       }
@@ -264,7 +292,9 @@ export default function CalculatePage() {
     cont += 1;
     return cont;
   };
-
+  useEffect(() => {
+    setFormat('d');
+  }, []);
   useEffect(() => {
     let d = 1;
     let a = 0;
@@ -272,7 +302,9 @@ export default function CalculatePage() {
     let t = 0;
 
     for (let k = 0; k < quotes.length; k += 1) {
-      d *= quotes[k].decimal;
+      if (quotes[k].logro !== '' && quotes[k].logro !== 0) {
+        d *= quotes[k].decimal;
+      }
     }
 
     if (d > 1) {
@@ -290,7 +322,6 @@ export default function CalculatePage() {
     });
   }, [dummy, quotes, bet]);
 
-  // TE ODIO ESLINT EN SERIO
   function checkMobile() {
     if (window.innerWidth <= 991) return true;
     return false;
@@ -300,7 +331,39 @@ export default function CalculatePage() {
     if (window.innerWidth > 991 && window.innerWidth < 1200) return true;
     return false;
   }
+  const changeFormat = value => {
+    setFormat(value);
+    for (let k = 0; k < quotes.length; k += 1) {
+      if (quotes[k].logro !== '' && quotes[k].logro !== 0) {
+        editQuote(quotes[k].id, quotes[k].logro, value);
+      }
+    }
 
+    let d = 1;
+    let a = 0;
+    let f = '0/0';
+    let t = 0;
+
+    for (let k = 0; k < quotes.length; k += 1) {
+      if (quotes[k].logro !== '' && quotes[k].logro !== 0) {
+        d *= quotes[k].decimal;
+      }
+    }
+
+    if (d > 1) {
+      a = toGring(d);
+      f = toFrac(d);
+      t = d * bet;
+    }
+
+    setStats({
+      dec: d.toFixed(2),
+      ame: a,
+      fra: f,
+      ganancia: Math.round(t - (d > 1 ? bet : 0)),
+      total: Math.round(t),
+    });
+  };
   return (
     <>
       <Container>
@@ -320,7 +383,10 @@ export default function CalculatePage() {
                 <Select
                   button
                   defaultValue="d"
-                  onChange={(e, { value }) => setFormat(value)}
+                  onChange={(e, { value }) => {
+                    setFormat(value);
+                    changeFormat(value);
+                  }}
                   options={[
                     { key: 'd', value: 'd', text: 'Decimal' },
                     { key: 'a', value: 'a', text: 'Americano' },
