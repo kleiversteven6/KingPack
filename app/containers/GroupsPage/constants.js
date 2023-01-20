@@ -1,4 +1,5 @@
 // Redux DB
+export const DB = 'DB';
 export const DB_MATCHS = 'DB_MATCHS';
 export const DB_GROUPS = 'DB_GROUPS';
 export const DB_TEAMS = 'DB_TEAMS';

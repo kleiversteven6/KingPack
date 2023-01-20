@@ -1,0 +1,5 @@
+export const GENMODAL = 'GENMODAL';
+
+export const DBGROUPS_LOADING = 'DBGROUPS_LOADING';
+
+export const SET_GENMODAL = 'GET_GENMODAL';

@@ -1,4 +1,5 @@
 import {
+  DB,
   DB_MATCHS,
   DB_GROUPS,
   DB_TEAMS,
@@ -13,6 +14,7 @@ export default function selector(e) {
     const select = {};
 
     e.forEach(value => {
+      if (value === DB) select.DB = state.GroupsReducer;
       if (value === DB_MATCHS) select.matchsDB = state.GroupsReducer.matchsDB;
       if (value === DB_GROUPS) select.groupsDB = state.GroupsReducer.groupsDB;
       if (value === DB_TEAMS) select.teamsDB = state.GroupsReducer.teamsDB;

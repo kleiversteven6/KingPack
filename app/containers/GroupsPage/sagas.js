@@ -121,7 +121,7 @@ async function saveGroupMatch(payload) {
   payload.forEach(async value => {
     await saveMatchs({
       idGrupo: value.id,
-      categoria: '',
+      categoria: 'Grupos',
       fecha: value.date,
       fecha2: '',
       golesCasa: '',

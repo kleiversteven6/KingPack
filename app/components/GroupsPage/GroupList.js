@@ -33,7 +33,6 @@ function Main({ data, teamsDB }) {
             <Button
               key={runCont()}
               fluid
-              size="large"
               labelPosition="left"
               content={getName(value)}
               label={{ image: getIcon(value), pointing: false }}
