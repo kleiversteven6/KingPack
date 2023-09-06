@@ -357,8 +357,6 @@ export default function CalculatePage() {
               <Divider className="CalculatePage_PcHide" />
               <Grid textAlign="center">
                 <Grid.Row>
-               
-
                   <Grid.Column computer={4} mobile={16}>
                     <Button.Group vertical={!checkMobile()}>
                       <Button
@@ -380,7 +378,7 @@ export default function CalculatePage() {
                       <Button
                         className="CalculatePage_Btn1"
                         color="brown"
-                        content='Multiplicador'
+                        content="Multiplicador"
                       />
                       <Button
                         basic
@@ -389,7 +387,7 @@ export default function CalculatePage() {
                       />
                     </Button.Group>
                   </Grid.Column>
-                  
+
                   <Grid.Column computer={4} mobile={16}>
                     <Button.Group vertical={!checkMobile()}>
                       <Button
@@ -429,8 +427,6 @@ export default function CalculatePage() {
               {/* ↓ */}
               <Grid>
                 <Grid.Row>
-                 
-
                   {/* <Grid.Column width={5}>
                     <Button.Group vertical>
                       <Button
@@ -460,7 +456,6 @@ export default function CalculatePage() {
                       />
                     </Button.Group>
                   </Grid.Column> */}
-
                 </Grid.Row>
               </Grid>
             </GridColumn>

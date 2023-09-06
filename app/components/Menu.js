@@ -8,7 +8,7 @@ export default function MenuComponent() {
   };
 
   return (
-    <Menu size='small' inverted>
+    <Menu size="small" inverted>
       <Menu.Item
         name="inicio"
         active={activeItem === 'inicio' && true}
@@ -56,7 +56,6 @@ export default function MenuComponent() {
           <Icon name="qrcode" />
           <Icon name="check" color="black" size="mini" corner="bottom right" />
         </Icon.Group>
-        
         Validar QR
       </Menu.Item>
       <Menu.Item

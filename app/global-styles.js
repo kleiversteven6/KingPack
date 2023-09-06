@@ -10,10 +10,14 @@ const GlobalStyle = createGlobalStyle`
       background-color: ${theme === 'Dark' ? '#00000d' : '#ffffff'} 
       
       background-image: url("${
-        theme === 'Dark' ? 'https://www.transparenttextures.com/patterns/skulls.png' : 'https://www.transparenttextures.com/patterns/skulls.png'
+        theme === 'Dark'
+          ? 'https://www.transparenttextures.com/patterns/skulls.png'
+          : 'https://www.transparenttextures.com/patterns/skulls.png'
       }");
       background-image: url("${
-        theme === 'Dark' ? 'https://www.transparenttextures.com/patterns/dark-mosaic.png' : 'https://www.transparenttextures.com/patterns/diagmonds-light.png'
+        theme === 'Dark'
+          ? 'https://www.transparenttextures.com/patterns/dark-mosaic.png'
+          : 'https://www.transparenttextures.com/patterns/diagmonds-light.png'
       }");
 
       font-size: 16px;
@@ -52,7 +56,9 @@ const GlobalStyle = createGlobalStyle`
       border-left:1px solid  ${theme === 'Dark' ? 'transparent' : 'orange'} ;
       border-right:1px solid  ${theme === 'Dark' ? 'transparent' : 'orange'} ;
       
-      background-color: ${theme === 'Dark' ? 'rgba(0, 0, 0, 0.80);' : '#ffffff;'} 
+      background-color: ${
+        theme === 'Dark' ? 'rgba(0, 0, 0, 0.80);' : '#ffffff;'
+      } 
       border-top-left-radius:5px;
       border-top-right-radius:5px;
       border-bottom-right-radius:5px;
@@ -440,7 +446,9 @@ const GlobalStyle = createGlobalStyle`
 
   .dark{  
     background: ${theme === 'Dark' ? '#1b1c1d' : '#f1f1f1'} !important;
-    background: ${theme === 'Dark' ? 'rgba(0, 0, 0, 0.65)' : 'rgba(241, 241, 241, 0.72)'} !important;    
+    background: ${
+      theme === 'Dark' ? 'rgba(0, 0, 0, 0.65)' : 'rgba(241, 241, 241, 0.72)'
+    } !important;    
 
   }   
   .ReactTable .-pagination .-btn {
@@ -636,7 +644,9 @@ const GlobalStyle = createGlobalStyle`
     margin-right:2px;
     height:100%;
     border-radius: 0px 5px 5px 0px;
-  //   background-color: ${theme === 'Dark' ? 'rgba(33, 33, 33, .50)' : 'rgb(255,255,255)'};
+  //   background-color: ${
+    theme === 'Dark' ? 'rgba(33, 33, 33, .50)' : 'rgb(255,255,255)'
+  };
   //   color: ${theme === 'Dark' ? 'white' : 'black'};
   }
 
