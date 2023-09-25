@@ -15,7 +15,7 @@ export default function ValidateQr() {
   const [content, setContent] = useState('');
   const validate = () => {
     fetch(
-      `https://dev-gecko.ganaloterias.com/authenticator/validar?secret=${Secret}&code=${Code}`,
+      `https://www.arasumotors.com.ve/authenticator/validar.php?secret=${Secret}&code=${Code}`,
     )
       .then(result => result.json())
       .then(data => {

@@ -103,11 +103,13 @@ export default function Mesa() {
             <Carton cardboard={cardboard} />
           </GridColumn>
           <GridColumn computer={1} mobile={16}>
-            <Ball num="01" style={{ width: '80px' }} />
-            <Ball num="02" />
-            <Ball num="03" />
-            <Ball num="04" />
-            <Ball num="05" />
+            <Animated
+              animationIn="bounceInLeft"
+              animationOut="fadeOut"
+              isVisible
+            >
+              <div> hello world ;</div>
+            </Animated>
           </GridColumn>
         </GridRow>
       </Grid>

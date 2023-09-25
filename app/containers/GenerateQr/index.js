@@ -8,7 +8,7 @@ export default function GenerateQr() {
     response: '',
   });
   const generate = () => {
-    fetch('https://dev-gecko.ganaloterias.com/authenticator/generarqr')
+    fetch('https://www.arasumotors.com.ve/authenticator/generarqr.php')
       .then(result => result.json())
       .then(data => setResponse(data));
   };
