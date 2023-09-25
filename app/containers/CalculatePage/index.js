@@ -391,7 +391,6 @@ export default function CalculatePage({ themevertical = false }) {
                     />
                   </Button.Group>
                 </Grid.Column>
-
                 <Grid.Column computer={4} mobile={8}>
                   <Button.Group
                     fluid
