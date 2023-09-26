@@ -14,7 +14,7 @@ export default function MenuComponent() {
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);
   };
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   return (
     <>
       <Menu size="small" inverted>

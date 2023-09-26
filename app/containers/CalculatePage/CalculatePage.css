@@ -30,3 +30,9 @@
     width: 70px !important;
   }
 }
+.nopadded{
+  padding: 0.1em 0.3em !important;
+}
+.inputsize{
+  font-size: 12px !important;
+}

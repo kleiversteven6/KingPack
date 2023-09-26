@@ -4,11 +4,14 @@ import {
   Button,
   Container,
   Divider,
+  Form,
   Grid,
   GridColumn,
+  Header,
   Input,
   Segment,
   Select,
+  Table,
 } from 'semantic-ui-react';
 import './CalculatePage.css';
 
@@ -280,71 +283,90 @@ export default function CalculatePage({ themevertical = false }) {
 
     setQuotes(updatedQuotes);
   };
+  const options = Array.from({ length: 15 }, (_, i) => {
+    const value = (i + 1).toString();
+    return { key: value, value, text: value };
+  });
+
   return (
     <>
-      <Segment secondary raised className="dark">
-        <Grid stretched>
-          <Grid.Column computer={8} mobile={8}>
-            <Button.Group
-              vertical={checkMobile() || checkTablet() || themevertical}
-              size={checkMobile() || themevertical ? 'mini' : 'small'}
-              fluid
-            >
-              <Button
-                className="CalculatePage_Btn0"
-                color="grey"
-                content="Formato"
-              />
-              <Select
-                fluid
-                button
-                defaultValue={format}
-                onChange={(e, { value }) => {
-                  setFormat(value);
-                  changeFormat(value);
-                }}
-                options={[
-                  { key: 'd', value: 'd', text: 'Decimal' },
-                  { key: 'a', value: 'a', text: 'Americano' },
-                  { key: 'f', value: 'f', text: 'Fraccion' },
-                ]}
-              />
-            </Button.Group>
-          </Grid.Column>
-          <Grid.Column
-            computer={8}
-            mobile={8}
-            style={{
-              padding: '1em 0.3em',
-              margin: 0,
-            }}
-          >
-            <Button.Group
-              fluid
-              vertical={checkMobile() || checkTablet() || themevertical}
-              size={checkMobile() || themevertical ? 'mini' : 'small'}
-            >
-              <Button
-                className="CalculatePage_Btn0"
-                color="grey"
-                content="Apuesta"
-              />
-              <Button style={{ backgroundColor: 'white' }}>
-                <Input
-                  transparent
-                  type="number"
-                  value={bet}
-                  min={1}
-                  onChange={e => setBet(e.target.value)}
-                />
-              </Button>
-            </Button.Group>
-          </Grid.Column>
-          <GridColumn computer={16} mobile={16}>
-            <Divider style={{ padding: 0, marginTop: 0 }} />
-            <Grid textAlign="center">
-              <Grid.Row>
-                <Grid.Column computer={4} mobile={8}>
+      <Grid>
+        <Grid.Column computer={5} mobile={16}>
+          <Segment raised>
+            <Header>Calculadora</Header>
+            <Grid stretched>
+              <Grid.Row className="nopadded">
+                <Grid.Column
+                  width={6}
+                  verticalAlign="middle"
+                  textAlign="right"
+                  className="inputsize nopadded"
+                >
+                  Formato:
+                </Grid.Column>
+                <Grid.Column computer={10} className="nopadded">
+                  <Select
+                    className="inputsize"
+                    button
+                    fluid
+                    defaultValue={format}
+                    onChange={(e, { value }) => {
+                      setFormat(value);
+                      changeFormat(value);
+                    }}
+                    options={[
+                      { key: 'd', value: 'd', text: 'Decimal' },
+                      { key: 'a', value: 'a', text: 'Americano' },
+                      { key: 'f', value: 'f', text: 'Fraccion' },
+                    ]}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row className="nopadded">
+                <Grid.Column
+                  width={6}
+                  verticalAlign="middle"
+                  textAlign="right"
+                  className="inputsize nopadded"
+                >
+                  Cant. Apuestas:
+                </Grid.Column>
+                <Grid.Column computer={10} className="nopadded">
+                  <Select
+                    className="inputsize"
+                    button
+                    fluid
+                    defaultValue="1"
+                    onChange={(e, { value }) => {}}
+                    options={options}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row className="nopadded">
+                <Grid.Column
+                  width={6}
+                  verticalAlign="middle"
+                  textAlign="right"
+                  className="inputsize nopadded"
+                >
+                  Monto Apuesta:
+                </Grid.Column>
+                <Grid.Column width={10} className="nopadded">
+                  <Input
+                    className="inputsize "
+                    fluid
+                    type="number"
+                    value={bet}
+                    min={1}
+                    onChange={e => setBet(e.target.value)}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+
+              {/* <GridColumn computer={16} mobile={16}>
+                <Grid textAlign="center">
+                  <Grid.Row>
+                     <Grid.Column computer={4} mobile={16}>
                   <Button.Group
                     fluid
                     vertical={!checkMobile() || !themevertical}
@@ -359,58 +381,58 @@ export default function CalculatePage({ themevertical = false }) {
                       size={checkMobile() || themevertical ? 'mini' : 'small'}
                     />
                   </Button.Group>
-                </Grid.Column>
+          </Grid.Column>] 
 
-                <Grid.Column computer={4} mobile={8}>
-                  <Button.Group
-                    fluid
-                    vertical={!checkMobile() || !themevertical}
-                    size={checkMobile() || themevertical ? 'mini' : 'small'}
-                  >
-                    <Button color="brown" content="Cuotas" />
-                    <Button
-                      basic
-                      color="orange"
-                      content={stats.mul === '' ? '0' : stats.mul}
-                    />
-                  </Button.Group>
-                </Grid.Column>
+                    <Grid.Column computer={4} mobile={16}>
+                      <Button.Group
+                        fluid
+                        vertical={!checkMobile() || !themevertical}
+                        size={checkMobile() || themevertical ? 'mini' : 'small'}
+                      >
+                        <Button color="brown" content="Cuotas" />
+                        <Button
+                          basic
+                          color="orange"
+                          content={stats.mul === '' ? '0' : stats.mul}
+                        />
+                      </Button.Group>
+                    </Grid.Column> 
 
-                <Grid.Column computer={4} mobile={8}>
-                  <Button.Group
-                    fluid
-                    vertical={!checkMobile() || !themevertical}
-                    size={checkMobile() || themevertical ? 'mini' : 'small'}
-                  >
-                    <Button color="yellow" content="Ganancia" />
-                    <Button
-                      basic
-                      color="yellow"
-                      icon="dollar"
-                      content={stats.ganancia === '' ? '0' : stats.ganancia}
-                    />
-                  </Button.Group>
-                </Grid.Column>
-                <Grid.Column computer={4} mobile={8}>
-                  <Button.Group
-                    fluid
-                    vertical={!checkMobile() || !themevertical}
-                    size={checkMobile() || themevertical ? 'mini' : 'small'}
-                  >
-                    <Button color="green" content="A Cobrar" />
-                    <Button
-                      basic
-                      color="green"
-                      icon="dollar"
-                      content={stats.total}
-                    />
-                  </Button.Group>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-            <Grid>
-              <Grid.Row>
-                {/* <Grid.Column width={5}>
+                    <Grid.Column computer={4} mobile={8}>
+                      <Button.Group
+                        fluid
+                        vertical={!checkMobile() || !themevertical}
+                        size={checkMobile() || themevertical ? 'mini' : 'small'}
+                      >
+                        <Button color="yellow" content="Ganancia" />
+                        <Button
+                          basic
+                          color="yellow"
+                          icon="dollar"
+                          content={stats.ganancia === '' ? '0' : stats.ganancia}
+                        />
+                      </Button.Group>
+                    </Grid.Column>
+                    <Grid.Column computer={4} mobile={8}>
+                      <Button.Group
+                        fluid
+                        vertical={!checkMobile() || !themevertical}
+                        size={checkMobile() || themevertical ? 'mini' : 'small'}
+                      >
+                        <Button color="green" content="A Cobrar" />
+                        <Button
+                          basic
+                          color="green"
+                          icon="dollar"
+                          content={stats.total}
+                        />
+                      </Button.Group>
+                    </Grid.Column>
+                  </Grid.Row> 
+                </Grid> */}
+              {/* <Grid>
+                     <Grid.Row>
+                  <Grid.Column width={5}>
                     <Button.Group vertical>
                       <Button
                         className="CalculatePage_Btn1"
@@ -438,13 +460,13 @@ export default function CalculatePage({ themevertical = false }) {
                         content={stats.fra === '' ? '0/0' : stats.fra}
                       />
                     </Button.Group>
-                  </Grid.Column> */}
-              </Grid.Row>
+                  </Grid.Column>
+                  </Grid.Row>
+                </Grid> 
+              </GridColumn> */}
             </Grid>
-          </GridColumn>
-        </Grid>
-      </Segment>
-      <Container textAlign="center">
+
+            {/* <Container textAlign="center">
         <Button
           className="CalculatePage_PcHide"
           primary
@@ -452,49 +474,72 @@ export default function CalculatePage({ themevertical = false }) {
           icon="plus"
           onClick={() => addQuote()}
         />
-      </Container>
+        </Container> */}
 
-      <Grid>
-        {!checkMobile() && !themevertical && (
-          <Grid.Row>
-            <Grid.Column mobile={0} computer={2}>
-              #
-            </Grid.Column>
-            <Grid.Column mobile={0} computer={12}>
-              Cuota
-            </Grid.Column>
-            <Grid.Column mobile={0} computer={2}>
-              {/* !checkMobile() && !themevertical && (
-                <Button primary circular icon="plus" onClick={addQuote} />
-              ) */}
-            </Grid.Column>
-          </Grid.Row>
-        )}
-        {quotes.map(row => (
-          <Grid.Row textAlign="center" key={row.id}>
-            <Grid.Column mobile={1} tablet={1} computer={1}>
-              {runCont()}
-            </Grid.Column>
-            <Grid.Column mobile={11} tablet={14} computer={12}>
-              <Input
-                size={checkMobile() || themevertical ? 'mini' : 'small'}
-                fluid
-                type={format === 'f' ? 'text' : 'number'}
-                value={row.logro}
-                onChange={e => editQuote(row.id, e.target.value)}
-              />
-            </Grid.Column>
-            <Grid.Column mobile={3} tablet={1} computer={2}>
-              <Button
-                icon="trash"
-                basic
-                size={checkMobile() || themevertical ? 'mini' : 'small'}
-                onClick={() => deleteQuote(row.id)}
-                color="red"
-              />
-            </Grid.Column>
-          </Grid.Row>
-        ))}
+            <Table celled>
+              {!checkMobile() && !themevertical && (
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell
+                      textAlign="center"
+                      content="#"
+                      className="inputsize nopadded "
+                    />
+                    <Table.HeaderCell
+                      textAlign="center"
+                      content="Resultados"
+                      className="inputsize nopadded "
+                    />
+                    <Table.HeaderCell
+                      textAlign="center"
+                      content="Probabilidades"
+                      className="inputsize nopadded "
+                    />
+                  </Table.Row>
+                </Table.Header>
+              )}
+              <Table.Body>
+                {quotes.map(row => (
+                  <Table.Row key={row.id}>
+                    <Table.Cell className="nopadded">{runCont()}</Table.Cell>
+                    <Table.Cell className="nopadded">
+                      <Select
+                        className="inputsize"
+                        button
+                        fluid
+                        defaultValue={1}
+                        onChange={(e, { value }) => {}}
+                        options={[
+                          { key: 1, value: 1, text: 'Ganador' },
+                          { key: 2, value: 1, text: 'Sin Efecto' },
+                        ]}
+                      />
+                    </Table.Cell>
+                    <Table.Cell className="nopadded">
+                      <Input
+                        size={checkMobile() || themevertical ? 'mini' : 'small'}
+                        fluid
+                        type={format === 'f' ? 'text' : 'number'}
+                        value={row.logro}
+                        onChange={e => editQuote(row.id, e.target.value)}
+                      />
+                    </Table.Cell>
+                    {/* <Table.Cell>
+                      <Button
+                        icon="trash"
+                        basic
+                        size={checkMobile() || themevertical ? 'mini' : 'small'}
+                        onClick={() => deleteQuote(row.id)}
+                        color="red"
+                      />
+                </Table.Cell> */}
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
+          </Segment>
+        </Grid.Column>
+        <Grid.Column computer={4} mobile={0} />
       </Grid>
     </>
   );
