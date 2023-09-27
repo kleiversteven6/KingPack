@@ -118,7 +118,7 @@ export default function MenuComponent() {
         <>
           <Container>
             <Header>Calculadora</Header>
-            <CalculatePage themevertical />
+            {/* <CalculatePage themevertical /> */}
           </Container>
         </>
       </Sidebar>

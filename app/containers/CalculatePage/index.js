@@ -1,47 +1,24 @@
-import { random } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
-  Container,
-  Divider,
-  Form,
   Grid,
-  GridColumn,
   Header,
   Input,
   Segment,
   Select,
-  Table,
+  Modal,
+  Button,
+  Icon,
+  List,
 } from 'semantic-ui-react';
 import './CalculatePage.css';
 
 // eslint-disable-next-line react/prop-types
-export default function CalculatePage({ themevertical = false }) {
+export default function CalculatePage() {
   const [bet, setBet] = useState('');
   const [format, setFormat] = useState('a');
-  const [quotes, setQuotes] = useState([
-    {
-      id: 1,
-      logro: '',
-      americano: 0,
-      fraccionario: 0,
-      decimal: 0,
-    },
-    {
-      id: 2,
-      logro: '',
-      americano: 0,
-      fraccionario: 0,
-      decimal: 0,
-    },
-    {
-      id: 3,
-      logro: '',
-      americano: 0,
-      fraccionario: 0,
-      decimal: 0,
-    },
-  ]);
+  const [probabilidades, setProbabilidades] = useState(1);
+  const [quotes, setQuotes] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const [stats, setStats] = useState({
     mul: 0,
@@ -146,7 +123,7 @@ export default function CalculatePage({ themevertical = false }) {
 
     return Math.round(ok);
   };
-
+  /*
   const addQuote = () => {
     const d = new Date();
 
@@ -161,10 +138,10 @@ export default function CalculatePage({ themevertical = false }) {
       },
     ]);
   };
-
-  const deleteQuote = id => {
+*/
+  /* const deleteQuote = id => {
     setQuotes(quotes.filter(quote => quote.id !== id));
-  };
+  }; */
 
   const editQuote = (id, e, v = '') => {
     setQuotes(prevQuotes =>
@@ -184,14 +161,14 @@ export default function CalculatePage({ themevertical = false }) {
         switch (f) {
           case 'd': {
             if (e <= 1) return quote;
-            updatedQuote.decimal = e.toFixed(2);
+            updatedQuote.decimal = e;
             updatedQuote.americano = toGring(e);
             updatedQuote.fraccionario = toFrac(e);
             break;
           }
           case 'a': {
             const ok = e < 0 ? 1 - 100 / e : 1 + e / 100;
-            updatedQuote.decimal = ok.toFixed(2);
+            updatedQuote.decimal = ok;
             updatedQuote.americano = e;
             updatedQuote.fraccionario = toFrac(ok);
             break;
@@ -199,8 +176,8 @@ export default function CalculatePage({ themevertical = false }) {
           case 'f': {
             const [x, y] = e.split('/');
             const well = Number(x) / Number(y) + 1;
-            const z = Number(well.toFixed(2));
-            updatedQuote.decimal = z.toFixed(2);
+            const z = Number(well);
+            updatedQuote.decimal = z;
             updatedQuote.americano = toGring(z);
             updatedQuote.fraccionario = e;
             break;
@@ -213,51 +190,113 @@ export default function CalculatePage({ themevertical = false }) {
       }),
     );
   };
-
+  const editResult = (id, e) => {
+    setQuotes(prevQuotes =>
+      prevQuotes.map(quote => {
+        if (quote.id !== id) return quote;
+        const updatedQuote = { ...quote, status: e };
+        return updatedQuote;
+      }),
+    );
+  };
   const runCont = () => {
     cont += 1;
     return cont;
   };
   useEffect(() => {
+    const cuotas = Array.from({ length: probabilidades }, (_, i) => ({
+      id: i,
+      logro: '',
+      americano: 0,
+      fraccionario: 0,
+      decimal: 0,
+      status: 1,
+    }));
+    setQuotes(cuotas);
+  }, [probabilidades]);
+
+  useEffect(() => {
     const decimals = quotes
       .filter(quote => quote.logro !== '' && quote.logro !== 0)
-      .map(quote => quote.decimal);
+      .map(quote => ({
+        decimal: quote.decimal,
+        status: quote.status,
+      }));
 
-    const d = decimals.reduce((acc, val) => acc * val, 1);
-    const a = d > 1 ? toGring(d) : 0;
-    const f = d > 1 ? toFrac(d) : '0/0';
-    const t = d > 1 ? d * bet : 0;
+    let total = 0;
+    let s = 0;
+    let d = 0;
+    const a = 0;
+    const f = 0;
+    let td = 1;
+
+    decimals.forEach(row => {
+      if (row.decimal > 1) {
+        s = row.status;
+        let t = 0;
+
+        switch (s) {
+          case 1: {
+            d = row.decimal;
+            t = row.decimal * bet;
+            break;
+          }
+          case 2: {
+            d = 1;
+            t = row.decimal * bet;
+            break;
+          }
+          case 3: {
+            d = 0.5;
+            t = 0.5 * bet;
+            break;
+          }
+          case 4: {
+            const nd = (row.decimal - 1) / 2 + 1;
+            d = nd;
+            t = nd * bet;
+            break;
+          }
+          default:
+            t = 0;
+            break;
+        }
+        td *= d;
+        total += t;
+      }
+    });
 
     const m =
       {
-        d: d.toFixed(2),
+        d: td,
         a,
         f,
       }[format] || 0;
 
     setStats({
       mul: m,
-      dec: d.toFixed(2),
+      dec: td.toFixed(2),
       ame: a,
       fra: f,
-      ganancia: Math.round(t - (d > 1 ? bet : 0)),
-      total: Math.round(t),
+      ganancia: Math.round(total - (td > 1 ? bet : 0)),
+      total: Math.round(td * bet),
     });
   }, [quotes, bet]);
 
+  /* function checkTablet() {
+    if (window.innerWidth > 991 && window.innerWidth < 1200) return true;
+    return false;
+  } */
   function checkMobile() {
     if (window.innerWidth <= 991) return true;
     return false;
   }
 
-  function checkTablet() {
-    if (window.innerWidth > 991 && window.innerWidth < 1200) return true;
-    return false;
-  }
   const changeFormat = value => {
-    setFormat(value);
+    setProbabilidades(1);
+    // setFormat(value);
 
-    const updatedQuotes = quotes.map(quote => {
+    /* const updatedQuotes = quotes.map(quote => {
       if (quote.logro !== '' && quote.logro !== 0) {
         const newQuote = { ...quote };
         switch (value) {
@@ -278,19 +317,57 @@ export default function CalculatePage({ themevertical = false }) {
         }
         return newQuote;
       }
-      return quote;
+      return quote; 
     });
 
-    setQuotes(updatedQuotes);
+    setQuotes(updatedQuotes); */
   };
-  const options = Array.from({ length: 15 }, (_, i) => {
+  const options = Array.from({ length: 30 }, (_, i) => {
     const value = (i + 1).toString();
     return { key: value, value, text: value };
   });
 
   return (
     <>
-      <Grid>
+      <Modal size="mini" open={open}>
+        <Modal.Header>Informacion</Modal.Header>
+        <Modal.Content>
+          <List celled>
+            <List.Item>
+              <List.Content>
+                <List.Header as="a">Ganador</List.Header>
+                <List.Description>Ticket ganador</List.Description>
+              </List.Content>
+            </List.Item>
+            <List.Item>
+              <List.Content>
+                <List.Header as="a">Sin efecto</List.Header>
+                <List.Description>
+                  El cuota no tendra efecto sobre el ticket
+                </List.Description>
+              </List.Content>
+            </List.Item>
+            <List.Item>
+              <List.Content>
+                <List.Header as="a">Media Perdida</List.Header>
+                <List.Description>La cuota sera 0.5</List.Description>
+              </List.Content>
+            </List.Item>
+            <List.Item>
+              <List.Content>
+                <List.Header as="a">Media Ganancia</List.Header>
+                <List.Description>La gancia sera la mitad</List.Description>
+              </List.Content>
+            </List.Item>
+          </List>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color="red" onClick={() => setOpen(false)}>
+            Cerrar
+          </Button>
+        </Modal.Actions>
+      </Modal>
+      <Grid stretched>
         <Grid.Column computer={5} mobile={16}>
           <Segment raised>
             <Header>Calculadora</Header>
@@ -302,7 +379,7 @@ export default function CalculatePage({ themevertical = false }) {
                   textAlign="right"
                   className="inputsize nopadded"
                 >
-                  Formato:
+                  <strong>Formato:</strong>
                 </Grid.Column>
                 <Grid.Column computer={10} className="nopadded">
                   <Select
@@ -329,7 +406,7 @@ export default function CalculatePage({ themevertical = false }) {
                   textAlign="right"
                   className="inputsize nopadded"
                 >
-                  Cant. Apuestas:
+                  <strong>Cant. Apuestas:</strong>
                 </Grid.Column>
                 <Grid.Column computer={10} className="nopadded">
                   <Select
@@ -337,7 +414,9 @@ export default function CalculatePage({ themevertical = false }) {
                     button
                     fluid
                     defaultValue="1"
-                    onChange={(e, { value }) => {}}
+                    onChange={(e, { value }) => {
+                      setProbabilidades(value);
+                    }}
                     options={options}
                   />
                 </Grid.Column>
@@ -349,7 +428,7 @@ export default function CalculatePage({ themevertical = false }) {
                   textAlign="right"
                   className="inputsize nopadded"
                 >
-                  Monto Apuesta:
+                  <strong>Monto Apuesta:</strong>
                 </Grid.Column>
                 <Grid.Column width={10} className="nopadded">
                   <Input
@@ -362,184 +441,111 @@ export default function CalculatePage({ themevertical = false }) {
                   />
                 </Grid.Column>
               </Grid.Row>
-
-              {/* <GridColumn computer={16} mobile={16}>
-                <Grid textAlign="center">
-                  <Grid.Row>
-                     <Grid.Column computer={4} mobile={16}>
-                  <Button.Group
-                    fluid
-                    vertical={!checkMobile() || !themevertical}
-                    size={checkMobile() || themevertical ? 'mini' : 'small'}
-                  >
-                    <Button color="blue" content="Apuesta" />
-                    <Button
-                      basic
-                      color="blue"
-                      icon="dollar"
-                      content={bet === '' ? '0' : bet}
-                      size={checkMobile() || themevertical ? 'mini' : 'small'}
-                    />
-                  </Button.Group>
-          </Grid.Column>] 
-
-                    <Grid.Column computer={4} mobile={16}>
-                      <Button.Group
-                        fluid
-                        vertical={!checkMobile() || !themevertical}
-                        size={checkMobile() || themevertical ? 'mini' : 'small'}
-                      >
-                        <Button color="brown" content="Cuotas" />
-                        <Button
-                          basic
-                          color="orange"
-                          content={stats.mul === '' ? '0' : stats.mul}
-                        />
-                      </Button.Group>
-                    </Grid.Column> 
-
-                    <Grid.Column computer={4} mobile={8}>
-                      <Button.Group
-                        fluid
-                        vertical={!checkMobile() || !themevertical}
-                        size={checkMobile() || themevertical ? 'mini' : 'small'}
-                      >
-                        <Button color="yellow" content="Ganancia" />
-                        <Button
-                          basic
-                          color="yellow"
-                          icon="dollar"
-                          content={stats.ganancia === '' ? '0' : stats.ganancia}
-                        />
-                      </Button.Group>
-                    </Grid.Column>
-                    <Grid.Column computer={4} mobile={8}>
-                      <Button.Group
-                        fluid
-                        vertical={!checkMobile() || !themevertical}
-                        size={checkMobile() || themevertical ? 'mini' : 'small'}
-                      >
-                        <Button color="green" content="A Cobrar" />
-                        <Button
-                          basic
-                          color="green"
-                          icon="dollar"
-                          content={stats.total}
-                        />
-                      </Button.Group>
-                    </Grid.Column>
-                  </Grid.Row> 
-                </Grid> */}
-              {/* <Grid>
-                     <Grid.Row>
-                  <Grid.Column width={5}>
-                    <Button.Group vertical>
-                      <Button
-                        className="CalculatePage_Btn1"
-                        color="brown"
-                        content={
-                          checkMobile() ? 'Americano' : 'Cuota Total Americano'
-                        }
-                      />
-                      <Button basic color="orange" content={stats.ame} />
-                    </Button.Group>
-                  </Grid.Column>
-
-                  <Grid.Column width={5}>
-                    <Button.Group vertical>
-                      <Button
-                        className="CalculatePage_Btn1"
-                        color="brown"
-                        content={
-                          checkMobile() ? 'Fraccion' : 'Cuota Total Fraccionado'
-                        }
-                      />
-                      <Button
-                        basic
-                        color="orange"
-                        content={stats.fra === '' ? '0/0' : stats.fra}
-                      />
-                    </Button.Group>
-                  </Grid.Column>
-                  </Grid.Row>
-                </Grid> 
-              </GridColumn> */}
             </Grid>
 
-            {/* <Container textAlign="center">
-        <Button
-          className="CalculatePage_PcHide"
-          primary
-          circular
-          icon="plus"
-          onClick={() => addQuote()}
-        />
-        </Container> */}
-
-            <Table celled>
-              {!checkMobile() && !themevertical && (
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell
+            <Grid className="nopadded">
+              <Grid.Column className="nopadded">
+                <Grid celled style={{ margin: 'auto !important' }}>
+                  <Grid.Row>
+                    <Grid.Column
                       textAlign="center"
-                      content="#"
-                      className="inputsize nopadded "
-                    />
-                    <Table.HeaderCell
+                      width={2}
+                      className="nopadded"
+                    >
+                      #
+                    </Grid.Column>
+                    <Grid.Column
                       textAlign="center"
-                      content="Resultados"
-                      className="inputsize nopadded "
-                    />
-                    <Table.HeaderCell
+                      width={8}
+                      className="nopadded"
+                    >
+                      Resultados{' '}
+                      <Icon
+                        name="warning circle"
+                        onClick={() => setOpen(true)}
+                      />
+                    </Grid.Column>
+                    <Grid.Column
                       textAlign="center"
-                      content="Probabilidades"
-                      className="inputsize nopadded "
-                    />
-                  </Table.Row>
-                </Table.Header>
-              )}
-              <Table.Body>
-                {quotes.map(row => (
-                  <Table.Row key={row.id}>
-                    <Table.Cell className="nopadded">{runCont()}</Table.Cell>
-                    <Table.Cell className="nopadded">
-                      <Select
-                        className="inputsize"
-                        button
-                        fluid
-                        defaultValue={1}
-                        onChange={(e, { value }) => {}}
-                        options={[
-                          { key: 1, value: 1, text: 'Ganador' },
-                          { key: 2, value: 1, text: 'Sin Efecto' },
-                        ]}
-                      />
-                    </Table.Cell>
-                    <Table.Cell className="nopadded">
-                      <Input
-                        size={checkMobile() || themevertical ? 'mini' : 'small'}
-                        fluid
-                        type={format === 'f' ? 'text' : 'number'}
-                        value={row.logro}
-                        onChange={e => editQuote(row.id, e.target.value)}
-                      />
-                    </Table.Cell>
-                    {/* <Table.Cell>
-                      <Button
-                        icon="trash"
-                        basic
-                        size={checkMobile() || themevertical ? 'mini' : 'small'}
-                        onClick={() => deleteQuote(row.id)}
-                        color="red"
-                      />
-                </Table.Cell> */}
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
+                      width={6}
+                      className="nopadded"
+                    >
+                      Cuotas
+                    </Grid.Column>
+                  </Grid.Row>
+                  {quotes.map(row => (
+                    <Grid.Row key={row.id}>
+                      <Grid.Column
+                        textAlign="center"
+                        width={2}
+                        className="nopadded"
+                      >
+                        <strong>{runCont()}</strong>
+                      </Grid.Column>
+                      <Grid.Column width={8} className="nopadded">
+                        <Select
+                          className="inputsize"
+                          button
+                          fluid
+                          defaultValue={row.status}
+                          onChange={(e, { value }) => {
+                            editResult(row.id, value);
+                          }}
+                          options={[
+                            { key: 1, value: 1, text: 'Ganador' },
+                            { key: 2, value: 2, text: 'Sin Efecto' },
+                            {
+                              key: 3,
+                              value: 3,
+                              text: 'Medida Perdida',
+                            },
+                            {
+                              key: 4,
+                              value: 4,
+                              text: 'Media Ganancia',
+                            },
+                          ]}
+                        />
+                      </Grid.Column>
+                      <Grid.Column width={6} className="nopadded">
+                        <Input
+                          size="mini"
+                          fluid
+                          type={format === 'f' ? 'text' : 'number'}
+                          value={row.logro}
+                          onChange={e => editQuote(row.id, e.target.value)}
+                        />
+                      </Grid.Column>
+                    </Grid.Row>
+                  ))}
+                </Grid>
+              </Grid.Column>
+            </Grid>
+            <Grid className="nopadded" celled>
+              <Grid.Row>
+                <Grid.Column
+                  width={8}
+                  textAlign="right"
+                  className="nopadded inputsize"
+                >
+                  <strong>A cobrar:</strong>
+                </Grid.Column>
+                <Grid.Column width={8} className="nopadded inputsize">
+                  <strong>{Number(stats.total).toLocaleString('es-VE')}</strong>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
           </Segment>
         </Grid.Column>
-        <Grid.Column computer={4} mobile={0} />
+        {!checkMobile() && (
+          <Grid.Column computer={11} mobile={16}>
+            <Segment>
+              <Header>
+                <strong>Publicidad</strong>
+              </Header>
+            </Segment>
+          </Grid.Column>
+        )}
       </Grid>
     </>
   );
