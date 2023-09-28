@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
 import {
   Grid,
@@ -11,7 +13,7 @@ import {
   List,
 } from 'semantic-ui-react';
 import './CalculatePage.css';
-
+import ImageLazy from './ImageLazy';
 // eslint-disable-next-line react/prop-types
 export default function CalculatePage() {
   const [bet, setBet] = useState('');
@@ -19,6 +21,7 @@ export default function CalculatePage() {
   const [probabilidades, setProbabilidades] = useState(1);
   const [quotes, setQuotes] = useState([]);
   const [open, setOpen] = useState(false);
+  const [images, setImages] = useState([]);
 
   const [stats, setStats] = useState({
     mul: 0,
@@ -326,37 +329,65 @@ export default function CalculatePage() {
     const value = (i + 1).toString();
     return { key: value, value, text: value };
   });
+  const imagenes = async () => {
+    const requestURL =
+      'https://ns3172420.ip-51-83-223.eu/gecko/api/next?id=0&part=0&v=4.11';
+    const request = new Request(requestURL);
+
+    const response = await fetch(request);
+    const data = await response.json();
+    setImages(data.news);
+  };
+  useEffect(() => {
+    imagenes();
+  }, []);
 
   return (
     <>
-      <Modal size="mini" open={open}>
+      <Modal size="small" open={open}>
         <Modal.Header>Informacion</Modal.Header>
         <Modal.Content>
           <List celled>
             <List.Item>
               <List.Content>
                 <List.Header as="a">Ganador</List.Header>
-                <List.Description>Ticket ganador</List.Description>
+                <List.Description>
+                  Acertaste la condición de la apuesta realizada.
+                </List.Description>
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Content>
                 <List.Header as="a">Sin efecto</List.Header>
                 <List.Description>
-                  El cuota no tendra efecto sobre el ticket
+                  Ocurre cuando una de las apuestas iguala el resultado de un
+                  partido ejemplo: Total +2 goles y el partido finalicé 2-0.
+                  También puede pasar que el juego es suspendido, pospuesto o
+                  anulado. En este caso el logro quedaría como nulo.
                 </List.Description>
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Content>
                 <List.Header as="a">Media Perdida</List.Header>
-                <List.Description>La cuota sera 0.5</List.Description>
+                <List.Description>
+                  Ocurre cuando la apuesta es Asiática (.27 o .75). Si falla el
+                  resultado, estando cerca de la apuesta realizada, es media
+                  ganancia. En caso de estar lejos es completa. Ejemplo: Total
+                  +1.25 y el partido finalicé 1-0.
+                </List.Description>
               </List.Content>
             </List.Item>
             <List.Item>
               <List.Content>
                 <List.Header as="a">Media Ganancia</List.Header>
-                <List.Description>La gancia sera la mitad</List.Description>
+                <List.Description>
+                  {' '}
+                  Ocurre cuando la apuesta es Asiática (.27 o .75). Si acierta
+                  el resultado, estando cerca de la apuesta realizada, es media
+                  ganancia. En caso de estar lejos es completa. Ejemplo: Total
+                  +1.25 y el partido finalicé 2-0.
+                </List.Description>
               </List.Content>
             </List.Item>
           </List>
@@ -367,7 +398,7 @@ export default function CalculatePage() {
           </Button>
         </Modal.Actions>
       </Modal>
-      <Grid stretched>
+      <Grid>
         <Grid.Column computer={5} mobile={16}>
           <Segment raised>
             <Header>Calculadora</Header>
@@ -540,9 +571,7 @@ export default function CalculatePage() {
         {!checkMobile() && (
           <Grid.Column computer={11} mobile={16}>
             <Segment>
-              <Header>
-                <strong>Publicidad</strong>
-              </Header>
+              <ImageLazy images={images} />
             </Segment>
           </Grid.Column>
         )}
