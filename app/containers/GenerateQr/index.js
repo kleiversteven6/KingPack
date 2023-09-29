@@ -8,7 +8,7 @@ export default function GenerateQr() {
     response: '',
   });
   const generate = () => {
-    fetch('https://www.arasumotors.com.ve/authenticator/generarqr.php')
+    fetch('http://64.227.99.181/authenticator/generarqr.php')
       .then(result => result.json())
       .then(data => setResponse(data));
   };
